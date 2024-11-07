@@ -1,0 +1,30 @@
+* {
+    font-family: "Noto Sans KR", sans-serif;
+    list-style: none;
+}
+
+ul {
+    padding-left: 0;
+}
+
+body {
+    background-color: var(--black-primary-background);
+}
+
+:root {
+    /* logo colors */
+    --main-left-color : #119FA4;
+    --main-right-color : #205F9B;
+    --gray-left-color : #828282;
+    --gray-right-color : #3C3C3C;
+    --white-left-color : #FFFFFF;
+    --white-right-color : #E9E9E9;
+
+    /* background colors */
+    --white-background : #FFFFFF;
+    --white-primary-background : #ededed;
+    --white-secondary-background : #cccccc;
+    --black-background : #101010;
+    --black-primary-background : #191919;
+    --black-secondary-background : #2c2c2c;
+}
