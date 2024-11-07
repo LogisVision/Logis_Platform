@@ -1,11 +1,13 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
   <div class="platform-main">
     <div class="platform-side">
       <img src="./assets/logos/Black_Theme@3x.png" class="main-logo" alt="Logis Vision Logo"/>
+
+      <button class="test-button">Home</button>
     </div>
     <div class="platform-documents">
       <RouterView/>
@@ -46,5 +48,30 @@ import { RouterLink, RouterView } from 'vue-router'
 
   object-fit: contain;
   align-self: flex-start;
+}
+
+.test-button {
+  width: 80%;
+  height: auto;
+
+  display: flex;
+  align-items: center;
+
+  background-color: var(--black-background);
+
+  color: white;
+  font-size: 20px;
+  font-weight: 400;
+
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, font-weight 0.3s ease;
+}
+
+.test-button:hover {
+  background-color: var(--black-secondary-background);
+
+  font-weight: 600;
 }
 </style>
