@@ -9,7 +9,7 @@ import headerBox from '@/components/heaaderBox.vue';
       <header-box />
     </header>
     <main class="main-layout">
-      <h6>This is Home pages.</h6>
+      <h6>This is Load Base pages.</h6>
     </main>
     <footer class="footer-layout">
       <copyright-box />

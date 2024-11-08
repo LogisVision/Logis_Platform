@@ -5,13 +5,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'main',
-      component: () => import('../views/MainPageView.vue')
-    },
-    {
-      path: '/home',
       name: 'home',
       component: () => import('../views/HomeView.vue')
+    },
+    {
+      path: '/device',
+      name: 'device',
+      component: () => import('../views/DeviceView.vue')
+    },
+    {
+      path: '/load',
+      name: 'load',
+      component: () => import('../views/LoadBaseView.vue')
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/SettingsView.vue')
     },
   ],
 })
