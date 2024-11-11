@@ -54,6 +54,20 @@ import headerBox from '@/components/heaaderBox.vue';
         </div>
       </div>
 
+      <div class="container mt-2">
+        <div class="row flex-nowrap overflow-auto">
+          <div class="col-3 mb-2" v-for="i in 12" :key="i">
+            <div style="background-color: var(--black-secondary-background); border-radius: 20px;">
+              <div class="mb-2">
+                <img src="@/assets/images/emptyBox.png" alt="Item Image"
+                     class="img-fluid wait-item-image">
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
     <footer class="footer-layout">
       <copyright-box />
@@ -63,7 +77,8 @@ import headerBox from '@/components/heaaderBox.vue';
 
 <style scoped>
 .load-card-box {
-  background-color: var(--black-secondary-background); border-radius: 20px;
+  background-color: var(--black-secondary-background);
+  border-radius: 20px;
 }
 
 .load-card-content {
@@ -105,5 +120,12 @@ import headerBox from '@/components/heaaderBox.vue';
   color: var(--white-font);
   font-size: 1rem;
   font-weight: 700;
+}
+
+.wait-item-image {
+  width: 30%;
+
+  max-width: 100px;
+  border-radius: 20px;
 }
 </style>
