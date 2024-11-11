@@ -12,6 +12,10 @@ body {
     background-color: var(--black-background);
 }
 
+option {
+    color: black;
+}
+
 :root {
     /* logo colors */
     --main-left-color : #119FA4;
@@ -39,6 +43,8 @@ body {
     --black-button-hover: #232323;
     --black-button-active: #0362bc;
     --black-button-activ-hover: #0b467e;
+    --black-secondary-button-active: #787878;
+    --black-secondary-button-activ-hover: #4e4e4e;
 }
 
 .total-layout {

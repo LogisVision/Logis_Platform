@@ -14,9 +14,19 @@ const router = createRouter({
       component: () => import('../views/DeviceView.vue')
     },
     {
-      path: '/load',
-      name: 'load',
-      component: () => import('../views/LoadBaseView.vue')
+      path: '/loading/storage',
+      name: 'storage',
+      component: () => import('@/views/Loading/StorageView.vue')
+    },
+    {
+      path: '/loading/waitlist',
+      name: 'waitlist',
+      component: () => import('@/views/Loading/WaitListView.vue')
+    },
+    {
+      path: '/loading/register',
+      name: 'register',
+      component: () => import('@/views/Loading/RegisterView.vue')
     },
     {
       path: '/settings',
