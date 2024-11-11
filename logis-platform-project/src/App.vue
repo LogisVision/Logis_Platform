@@ -17,22 +17,44 @@ const router = useRouter();
       <ul class="side-button-list">
         <li class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'home' }"
-                      :class="{ 'side-button-active': route.name === 'home' }">Home
+                      :class="{ 'side-button-active': route.name === 'home' }">
+            Home
           </RouterLink>
         </li>
         <li class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'device' }"
-                      :class="{ 'side-button-active': route.name === 'device' }">Device
+                      :class="{ 'side-button-active': route.name === 'device' }">
+            Device
           </RouterLink>
         </li>
         <li class="side-button-cover">
-          <RouterLink class="side-button" :to="{ name: 'load' }"
-                      :class="{ 'side-button-active': route.name === 'load' }">Load Base
+          <RouterLink class="side-button" :to="{ name: 'storage' }"
+                      :class="{ 'side-button-active': (route.name === 'storage' || route.name === 'waitlist' || route.name === 'register')  }">
+            Loading
+          </RouterLink>
+        </li>
+        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'register'" class="side-second-button-cover">
+          <RouterLink class="side-second-button text-truncate" :to="{ name: 'storage' }"
+                      :class="{ 'side-second-button-active': route.name === 'storage' }">
+            Storage
+          </RouterLink>
+        </li>
+        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'register'" class="side-second-button-cover">
+          <RouterLink class="side-second-button text-truncate" :to="{ name: 'waitlist' }"
+                      :class="{ 'side-second-button-active': route.name === 'waitlist' }">
+            Wait List
+          </RouterLink>
+        </li>
+        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'register'" class="side-second-button-cover">
+          <RouterLink class="side-second-button text-truncate" :to="{ name: 'register' }"
+                      :class="{ 'side-second-button-active': route.name === 'register' }">
+            Register
           </RouterLink>
         </li>
         <li class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'settings' }"
-                      :class="{ 'side-button-active': route.name === 'settings' }">Settings
+                      :class="{ 'side-button-active': route.name === 'settings' }">
+            Settings
           </RouterLink>
         </li>
       </ul>
@@ -90,10 +112,12 @@ const router = useRouter();
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
+/* Side Button */
 .side-button-cover {
-  width: 100%;
+  width: 90%;
   height: auto;
 
   display: flex;
@@ -101,7 +125,7 @@ const router = useRouter();
 }
 
 .side-button {
-  width: 90%;
+  width: 100%;
   height: auto;
 
   background-color: var(--black-background);
@@ -111,7 +135,7 @@ const router = useRouter();
   margin: 10px 0;
 
   color: var(--white-font);
-  font-size: 20px;
+  font-size: 1.3rem;
   font-weight: 300;
   text-decoration: none;
   text-align: center;
@@ -138,6 +162,57 @@ const router = useRouter();
 
 .side-button-active:hover {
   background-color: var(--black-button-activ-hover);
+
+  font-weight: 400;
+}
+
+/* Side Second Button */
+.side-second-button-cover {
+  width: 90%;
+  height: auto;
+
+  display: flex;
+  justify-content: flex-end;
+}
+
+.side-second-button {
+  width: 60%;
+  height: auto;
+
+  background-color: var(--black-background);
+  border: none;
+  border-radius: 50px;
+  padding: 5px 20px;
+  margin: 10px 0;
+
+  color: var(--white-font);
+  font-size: 1.0rem;
+  font-weight: 300;
+  text-decoration: none;
+  text-align: center;
+
+  cursor: pointer;
+  transition: background-color 0.5s ease, font-weight 0.5s ease;
+}
+
+.side-second-button:hover {
+  background-color: var(--black-button-hover);
+
+  font-weight: 400;
+}
+
+.side-second-button:active {
+  background-color: var(--black-secondary-button-active);
+}
+
+.side-second-button-active {
+  background-color: var(--black-secondary-button-active);
+
+  font-weight: 600;
+}
+
+.side-second-button-active:hover {
+  background-color: var(--black-secondary-button-activ-hover);
 
   font-weight: 400;
 }
