@@ -6,7 +6,7 @@
 import { initializeApp } from "firebase/app";
 
 import {
-    getFirestore, getDoc, getDocs, doc, addDoc, updateDoc, deleteDoc, collection,
+    getFirestore, getDoc, getDocs, doc, addDoc, updateDoc, deleteDoc, collection, deleteField,
 } from "firebase/firestore";
 
 import {
@@ -60,7 +60,21 @@ const API = {
                     if (locationSnap.exists()) {
                         const locationData = { id: locationSnap.id, ...locationSnap.data() };
                         const location = { space: locationData.parent.id, address: locationData.address.id };
-                        return { ...item, image_url: imageURL, color_hex: colorHEX, location: location };
+                        return {
+                            id: item.id,
+                            location: item.location,
+                            location_data: location,
+                            color:
+                                {
+                                    red: item.color.red,
+                                    green: item.color.green,
+                                    blue: item.color.blue
+                                },
+                            color_hex: colorHEX,
+                            file_name: item.file_name,
+                            image_url: imageURL,
+                            state: item.state,
+                            };
                     }
                     else {
                         // 아이템의 위치 정보를 찾지 못한 경우
@@ -111,7 +125,21 @@ const API = {
                     const locationData = { id: locationSnap.id, ...locationSnap.data() };
                     const location = { space: locationData.parent.id, address: locationData.address.id };
 
-                    return { ...item, image_url: imageURL, color_hex: colorHEX, location: location };
+                    return {
+                        id: item.id,
+                        location: item.location,
+                        location_data: location,
+                        color:
+                            {
+                                red: item.color.red,
+                                green: item.color.green,
+                                blue: item.color.blue
+                            },
+                        color_hex: colorHEX,
+                        file_name: item.file_name,
+                        image_url: imageURL,
+                        state: item.state,
+                    };
                 });
 
                 return await Promise.all(newItemsPending);
@@ -131,7 +159,6 @@ const API = {
 
             // 아이템 위치 정보 레퍼런스 만들기
             const locationRef = doc(database, location.space, location.address);
-            // TODO - 위치 정보에도 데이터 반영하기
 
             // 새로운 아이템 만들기
             const newItem = {
@@ -145,6 +172,7 @@ const API = {
             try {
                 await addDoc(collection(database, "items"), newItem);
                 await uploadBytes(ref(storage, `picture/${uploadFileName}`), file);
+                // TODO - 위치 정보에도 데이터 반영하기
                 console.log("[System] 새로운 아이템이 성공적으로 등록되었습니다.");
                 return 200;
             }
@@ -158,7 +186,6 @@ const API = {
         update: async (id, location, state) => {
             // 변경된 위치 정보와 상태 정보 생성
             const locationRef = doc(database, location.space, location.address);
-            // TODO - 위치 정보에도 데이터 반영하기
             const newItemData = {
                 location: locationRef,
                 state: state,
@@ -167,6 +194,7 @@ const API = {
             // 변경 정보 업로드 하기
             try {
                 await updateDoc(doc(database, "items", id), newItemData);
+                // TODO - 위치 정보에도 데이터 반영하기
                 console.log("[System] 아이템 정보가 성공적으로 변경되었습니다.");
                 return 200;
             }
@@ -196,26 +224,141 @@ const API = {
         }
     },
 
-    // 입고 라인 관련 API
+    // 입고라인 관련 API
     incoming: {
+        // 하나의 입고라인 데이터 얻는 기능
         getOne: async (id) => {
-            // git push 테스트
+            try {
+                const docSnapshot = await getDoc(doc(database, "incomings", id));
+
+                // 입고라인 데이터 가공
+                // 입고라인 데이터가 있는 지 확인하기
+                if (docSnapshot.exists()) {
+                    let incoming = { id: docSnapshot.id, ...docSnapshot.data() };
+
+                    // 아이템이 있으면 정보 가져오기
+                    const itemRef = incoming.item;
+                    if (itemRef) {
+                        const item = await API.item.getOne(itemRef.id);
+                        incoming = {
+                            id: incoming.id,
+                            state: incoming.state,
+                            item: incoming.item,
+                            item_data: item,
+                        };
+                    }
+                    else {
+                        return {
+                            id: incoming.id,
+                            state: incoming.state,
+                        };
+                    }
+                }
+                else {
+                    // 입고라인 데이터를 찾지 못한 경우
+                    console.error("[Error] 해당 입고라인 데이터를 찾을 수 없습니다.");
+                    return 404;
+                }
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+        // 모든 입고라인 데이터 얻는 기능
         getAll: async () => {
+            try {
+                // 모든 입고라인 데이터 받아오기
+                const querySnapshot = await getDocs(collection(database, "incomings"));
+                const incomings = querySnapshot.docs.map((doc) => {
+                    return { id: doc.id, ...doc.data() };
+                });
 
+                // 입고라인 데이터에 맞는 아이템 정보 가져오기
+                const newIncomingsPending = incomings.map(async (incoming) => {
+                   const itemRef = incoming.item;
+                   if (itemRef) {
+                       const item = await API.item.getOne(itemRef.id);
+                       return {
+                           id: incoming.id,
+                           state: incoming.state,
+                           item: incoming.item,
+                           item_data: item,
+                       };
+                   }
+                   else {
+                       return {
+                           id: incoming.id,
+                           state: incoming.state,
+                       };
+                   }
+                });
+
+                // 새로운 입고라인 데이터 반환하기
+                return await Promise.all(newIncomingsPending);
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+        // 입고라인 상태를 업데이트하는 기능
         updateState: async (id, state) => {
+            // 변경된 상태 정보 생성
+            const newIncomingData = {
+                state: state,
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "incomings", id), newIncomingData);
+                console.log("[System] 입고라인 상태가 성공적으로 업데이트 되었습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 입고라인 상태를 변경하는데 실패하였습니다.");
+                return error.code;
+            }
         },
 
+        // 입고라인에 아이템을을 추가하는 기능 (**state 변경은 포함 안됨**)
         addItem: async (item) => {
+            // 변경된 상태 정보 생성
+            const newIncomingData = {
+                item: item,
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "incomings", item.id), newIncomingData);
+                console.log("[System] 입고라인에 아이템을 성공적으로 추가하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 입고라인에 아이템을 추가하는데 실패하였습니다.");
+                return error.code;
+            }
         },
 
-        removeItem: async () => {
+        // 입고라인에 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        removeItem: async (id) => {
+            // 삭제 명령어가 포함된 정보 생성
+            const removeItemData = {
+                item: deleteField(),
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "incomings", id), removeItemData);
+                console.log("[System] 입고라인에 아이템을 성공적으로 제거하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 입고라인에 아이템을 제거하는데 실패하였습니다.");
+                return error.code;
+            }
         }
     },
 
