@@ -226,7 +226,7 @@ const API = {
 
     // 입고라인 관련 API
     incoming: {
-        // 하나의 입고라인 데이터 얻는 기능
+        // 하나의 입고라인 데이터를 얻는 기능
         getOne: async (id) => {
             try {
                 const docSnapshot = await getDoc(doc(database, "incomings", id));
@@ -240,7 +240,7 @@ const API = {
                     const itemRef = incoming.item;
                     if (itemRef) {
                         const item = await API.item.getOne(itemRef.id);
-                        incoming = {
+                        return {
                             id: incoming.id,
                             state: incoming.state,
                             item: incoming.item,
@@ -266,7 +266,7 @@ const API = {
             }
         },
 
-        // 모든 입고라인 데이터 얻는 기능
+        // 모든 입고라인 데이터를 얻는 기능
         getAll: async () => {
             try {
                 // 모든 입고라인 데이터 받아오기
@@ -342,7 +342,7 @@ const API = {
             }
         },
 
-        // 입고라인에 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        // 입고라인의 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
         removeItem: async (id) => {
             // 삭제 명령어가 포함된 정보 생성
             const removeItemData = {
@@ -352,83 +352,391 @@ const API = {
             // 변경 정보 업로드 하기
             try {
                 await updateDoc(doc(database, "incomings", id), removeItemData);
-                console.log("[System] 입고라인에 아이템을 성공적으로 제거하였습니다.");
+                console.log("[System] 입고라인의 아이템을 성공적으로 제거하였습니다.");
                 return 200;
             }
             catch (error) {
-                console.error("[Error] 입고라인에 아이템을 제거하는데 실패하였습니다.");
+                console.error("[Error] 입고라인의 아이템을 제거하는데 실패하였습니다.");
                 return error.code;
             }
         }
     },
 
-    // 작업 공간 관련 API
+    // 작업공간 관련 API
     workspace: {
+        // 하나의 작업공간 데이터를 얻는 기능
         getOne: async (id) => {
+            try {
+                const docSnapshot = await getDoc(doc(database, "workspaces", id));
 
+                // 작업공간 데이터 가공
+                // 작업공간 데이터가 있는 지 확인하기
+                if (docSnapshot.exists()) {
+                    let workspace = { id: docSnapshot.id, ...docSnapshot.data() };
+
+                    // 아이템이 있으면 정보 가져오기
+                    const itemRef = workspace.item;
+                    if (itemRef) {
+                        const item = await API.item.getOne(itemRef.id);
+                        return {
+                            id: workspace.id,
+                            state: workspace.state,
+                            item: workspace.item,
+                            item_data: item,
+                        };
+                    }
+                    else {
+                        return {
+                            id: workspace.id,
+                            state: workspace.state,
+                        };
+                    }
+                }
+                else {
+                    // 작업공간 데이터를 찾지 못한 경우
+                    console.error("[Error] 해당 작업공간 데이터를 찾을 수 없습니다.");
+                    return 404;
+                }
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+        // 모든 작업공간 데이터를 얻는 기능
         getAll: async () => {
+            try {
+                // 모든 작업공간 데이터 받아오기
+                const querySnapshot = await getDocs(collection(database, "workspaces"));
+                const workspaces = querySnapshot.docs.map((doc) => {
+                    return { id: doc.id, ...doc.data() };
+                });
 
+                // 작업공간 데이터에 맞는 아이템 정보 가져오기
+                const newWorkspacesPending = workspaces.map(async (workspace) => {
+                    const itemRef = workspace.item;
+                    if (itemRef) {
+                        const item = await API.item.getOne(itemRef.id);
+                        return {
+                            id: workspace.id,
+                            state: workspace.state,
+                            item: workspace.item,
+                            item_data: item,
+                        }
+                    }
+                    else {
+                        return {
+                            id: workspace.id,
+                            state: workspace.state,
+                        };
+                    }
+                });
+
+                // 새로운 작업공간 데이터 반환하기
+                return await Promise.all(newWorkspacesPending);
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+        // 작업공간 상태를 업데이트하는 기능
         updateState: async (id, state) => {
+            // 변경된 상태 정보 생성
+            const newWorkspaceData = {
+                state: state,
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "workspaces", id), newWorkspaceData);
+                console.log("[System] 작업공간 상태가 성공적으로 업데이트 되었습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 작업공간 상태를 변경하는데 실패하였습니다.");
+                return error.code;
+            }
         },
 
+        // 작업공간에 아이템을 추가하는 기능 (**state 변경은 포함 안됨**)
         addItem: async (item) => {
+            // 변경된 상태 정보 생성
+            const newWorkspaceData = {
+                item: item,
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "workspaces", item.id), newWorkspaceData);
+                console.log("[System] 작업공간에 아이템을 성공적으로 추가하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 작업공간에 아이템을 추가하는데 실패하였습니다.");
+                return error.code;
+            }
         },
 
-        removeItem: async () => {
+        // 작업공간에 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        removeItem: async (id) => {
+            // 삭제 명령어가 포함된 정보 생성
+            const removeItemData = {
+                item: deleteField(),
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "workspaces", id), removeItemData);
+                console.log("[System] 작업공간의 아이템을 성공적으로 제거하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 작업공간의 아이템을 제거하는데 실패하였습니다.");
+                return error.code;
+            }
         }
     },
 
-    // 저장 공간 관련 API
+    // 저장공간 관련 API
     storage: {
+        // 하나의 저장공간 데이터를 얻는 기능
         getOne: async (id) => {
+            try {
+                const docSnapshot = await getDoc(doc(database, "storages", id));
 
+                // 저장공간 데이터 가공
+                // 저장공간 데이터가 있는지 확인하기
+                if (docSnapshot.exists()) {
+                    let storage = { id: docSnapshot.id, ...docSnapshot.data() };
+
+                    // 아이템이 있으면 정보 가져오기
+                    const itemRef = storage.item;
+                    if (itemRef) {
+                        const item = await API.item.getOne(itemRef.id);
+                        return {
+                            id: storage.id,
+                            state: storage.state,
+                            item: storage.item,
+                            item_data: item,
+                        };
+                    }
+                    else {
+                        return {
+                            id: storage.id,
+                            state: storage.state,
+                        };
+                    }
+                }
+                else {
+                    // 저장공간 데이터를 찾지 못한 경우
+                    console.error("[Error] 해당 저장공간 데이터를 찾을 수 없습니다.");
+                    return 404;
+                }
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+        // 모든 저장공간 데이터를 얻는 기능
         getAll: async () => {
+            try {
+                // 모든 저장공간 데이터 받아오기
+                const querySnapshot = await getDocs(collection(database, "storages"));
+                const storages = querySnapshot.docs.map((doc) => {
+                    return { id: doc.id, ...doc.data() };
+                });
 
+                // 저장공간 데이터에 맞는 아이템 정보 가져오기
+                const newStoragesPending = storages.map(async (storage) => {
+                    const itemRef = storage.item;
+                    if (itemRef) {
+                        const item = await API.item.getOne(itemRef.id);
+                        return {
+                            id: storage.id,
+                            state: storage.state,
+                            item: storage.item,
+                            item_data: item,
+                        }
+                    }
+                    else {
+                        return {
+                            id: storage.id,
+                            state: storage.state,
+                        };
+                    }
+                });
+
+                // 새로운 저장공간 데이터 반환하기
+                return await Promise.all(newStoragesPending);
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+
+        // 저장공간 상태를 업데이트하는 기능
         updateState: async (id, state) => {
+            // 변경된 상태 정보 생성
+            const newStorageData = {
+                state: state,
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "storages", id), newStorageData);
+                console.log("[System] 저장공간 상태가 성공적으로 업데이트 되었습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 저장공간 상태를 변경하는데 실패하였습니다.");
+                return error.code;
+            }
         },
 
+        // 저장공간에 아이템을 추가하는 기능 (**state 변경은 포함 안됨**)
         addItem: async (item) => {
+            // 변경된 상태 정보 생성
+            const newStorageData = {
+                item: item,
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "storages", item.id), newStorageData);
+                console.log("[System] 저장공간에 아이템을 성공적으로 추가하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 저장공간에 아이템을 추가하는데 실패하였습니다.");
+                return error.code;
+            }
         },
 
-        removeItem: async () => {
+        // 저장공간에 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        removeItem: async (id) => {
+            // 삭제 명령어가 포함된 정보 생성
+            const removeItemData = {
+                item: deleteField(),
+            };
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "storages", id), removeItemData);
+                console.log("[System] 저장공간의 아이템을 성공적으로 제거하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 저장공간의 아이템을 제거하는데 실패하였습니다.");
+                return error.code;
+            }
         }
     },
 
     // AGV 로봇 관련 API
     robot: {
+        // 하나의 AGV 상태 데이터를 얻는 기능
         getOne: async (id) => {
+            try {
+                const docSnapshot = await getDoc(doc(database, "robots", id));
 
+                if (docSnapshot.exists()) {
+                    let robot = { id: docSnapshot.id, ...docSnapshot.data() };
+                    return {
+                        id: robot.id,
+                        state: robot.state,
+                        location: robot.location,
+                    }
+                }
+                else {
+                    console.error("[Error] 해당 AGV 데이터를 찾을 수 없습니다.");
+                    return 404;
+                }
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
+        // 모든 AGV 상태 데이터를 얻는 기능
         getAll: async () => {
+            try {
+                const querySnapshot = await getDocs(collection(database, "robots"));
+                const robots = querySnapshot.docs.map((doc) => {
+                    return {
+                        id: doc.id,
+                        state: doc.data().state,
+                        location: doc.data().location,
+                    };
+                });
 
+                return robots;
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
         },
 
-        updateState: async (id, state) => {
+        // AGV 상태를 업데이트하는 기능
+        updateState: async (id, state, location) => {
+            // 변경된 상태 정보 생성
+            const newRobotData = {
+                state: state,
+                location: location,
+            }
 
+            // 변경 정보 업로드 하기
+            try {
+                await updateDoc(doc(database, "robots", id), newRobotData);
+                console.log("[System] AGV 상태가 성공적으로 업데이트 되었습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] AGV 상태를 변경하는데 실패하였습니다.");
+                return error.code;
+            }
         }
     },
 
     // AGV 로봇 명령어 관련 API
     command: {
+        // 모든 명령어를 불러오는 기능
         getAll: async () => {
-
+            // TODO 모든 명령어를 불러오는 기능
         },
-        getLa
+
+        // 수행이 완료되지 않은 명령어를 불러오는 기능
+        getRequest: async () => {
+            // TODO 수행이 완료되지 않은 명령어를 불러오는 기능
+        },
+
+        // 목표 AGV가 가장 먼저 수행해야 할 명령어를 불러오는 기능
+        getTargetOne: async (id) => {
+            // TODO 목표 AGV가 가장 먼저 수행해야 할 명령어를 불러오는 기능
+        },
+
+        // 수행이 완료된 명령어를 불러오는 기능
+        getDone: async () => {
+            // TODO 수행이 완료된 명령어를 불러오는 기능
+        },
+
+        // 새로운 명령어를 생성하는 기능
+        request: async (item, destination) => {
+            // TODO 새로운 명령어를 생성하는 기능
+        },
+
+        // 명령어를 삭제하는 기능
+        delete: async (id) => {
+            // TODO 명령어를 삭제하는 기능
+        }
     }
 }
 
