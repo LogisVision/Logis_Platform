@@ -170,9 +170,23 @@ const API = {
 
             // 업로드 시도하기
             try {
-                await addDoc(collection(database, "items"), newItem);
+                const itemRef = await addDoc(collection(database, "items"), newItem);
                 await uploadBytes(ref(storage, `picture/${uploadFileName}`), file);
-                // TODO - 위치 정보에도 데이터 반영하기
+
+                // 위치 정보에도 데이터 반영하기
+                if (location.space === "incomings") {
+                    await API.incoming.addItem(location.address, itemRef);
+                    await API.incoming.updateState(location.address, "full");
+                }
+                else if (location.space === "workspaces") {
+                    await API.workspace.addItem(location.address, itemRef);
+                    await API.workspace.updateState(location.address, "full");
+                }
+                else if (location.space === "storages") {
+                    await API.storage.addItem(location.address, itemRef);
+                    await API.storage.updateState(location.address, "full");
+                }
+
                 console.log("[System] 새로운 아이템이 성공적으로 등록되었습니다.");
                 return 200;
             }
@@ -324,7 +338,7 @@ const API = {
         },
 
         // 입고라인에 아이템을을 추가하는 기능 (**state 변경은 포함 안됨**)
-        addItem: async (item) => {
+        addItem: async (id, item) => {
             // 변경된 상태 정보 생성
             const newIncomingData = {
                 item: item,
@@ -332,7 +346,7 @@ const API = {
 
             // 변경 정보 업로드 하기
             try {
-                await updateDoc(doc(database, "incomings", item.id), newIncomingData);
+                await updateDoc(doc(database, "incomings", id), newIncomingData);
                 console.log("[System] 입고라인에 아이템을 성공적으로 추가하였습니다.");
                 return 200;
             }
@@ -462,7 +476,7 @@ const API = {
         },
 
         // 작업공간에 아이템을 추가하는 기능 (**state 변경은 포함 안됨**)
-        addItem: async (item) => {
+        addItem: async (id, item) => {
             // 변경된 상태 정보 생성
             const newWorkspaceData = {
                 item: item,
@@ -470,7 +484,7 @@ const API = {
 
             // 변경 정보 업로드 하기
             try {
-                await updateDoc(doc(database, "workspaces", item.id), newWorkspaceData);
+                await updateDoc(doc(database, "workspaces", id), newWorkspaceData);
                 console.log("[System] 작업공간에 아이템을 성공적으로 추가하였습니다.");
                 return 200;
             }
@@ -601,7 +615,7 @@ const API = {
         },
 
         // 저장공간에 아이템을 추가하는 기능 (**state 변경은 포함 안됨**)
-        addItem: async (item) => {
+        addItem: async (id, item) => {
             // 변경된 상태 정보 생성
             const newStorageData = {
                 item: item,
@@ -609,7 +623,7 @@ const API = {
 
             // 변경 정보 업로드 하기
             try {
-                await updateDoc(doc(database, "storages", item.id), newStorageData);
+                await updateDoc(doc(database, "storages", id), newStorageData);
                 console.log("[System] 저장공간에 아이템을 성공적으로 추가하였습니다.");
                 return 200;
             }
