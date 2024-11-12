@@ -1,3 +1,7 @@
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+// ┃ Logis Vision Firebase API ┃
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
 // 필요한 Firebase 라이브러리 불러오기
 import { initializeApp } from "firebase/app";
 
@@ -191,7 +195,99 @@ const API = {
             }
         }
     },
+
+    // 입고 라인 관련 API
+    incoming: {
+        getOne: async (id) => {
+
+        },
+
+        getAll: async () => {
+
+        },
+
+        updateState: async (id, state) => {
+
+        },
+
+        addItem: async (item) => {
+
+        },
+
+        removeItem: async () => {
+
+        }
+    },
+
+    // 작업 공간 관련 API
+    workspace: {
+        getOne: async (id) => {
+
+        },
+
+        getAll: async () => {
+
+        },
+
+        updateState: async (id, state) => {
+
+        },
+
+        addItem: async (item) => {
+
+        },
+
+        removeItem: async () => {
+
+        }
+    },
+
+    // 저장 공간 관련 API
+    storage: {
+        getOne: async (id) => {
+
+        },
+
+        getAll: async () => {
+
+        },
+
+        updateState: async (id, state) => {
+
+        },
+
+        addItem: async (item) => {
+
+        },
+
+        removeItem: async () => {
+
+        }
+    },
+
+    // AGV 로봇 관련 API
+    robot: {
+        getOne: async (id) => {
+
+        },
+
+        getAll: async () => {
+
+        },
+
+        updateState: async (id, state) => {
+
+        }
+    },
+
+    // AGV 로봇 명령어 관련 API
+    command: {
+        getAll: async () => {
+
+        },
+        getLa
+    }
 }
 
 // Export
-export { API as STORAGE_API };
+export { API as LOGIS_API };
