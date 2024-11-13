@@ -3,21 +3,17 @@
 // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 // 필요한 Firebase 라이브러리 불러오기
-import { initializeApp } from "firebase/app";
+import {initializeApp} from "firebase/app";
 
 import {
-    getFirestore, getDoc, getDocs, doc, addDoc, updateDoc, deleteDoc, collection, deleteField, serverTimestamp, 
+    addDoc, collection, deleteDoc, deleteField, doc, getDoc, getDocs, getFirestore, serverTimestamp, updateDoc,
 } from "firebase/firestore";
 
-import {
-    getStorage, getDownloadURL, ref, uploadBytes, deleteObject,
-} from "firebase/storage";
+import {deleteObject, getDownloadURL, getStorage, ref, uploadBytes,} from "firebase/storage";
 
-import {
-    getAuth,
-} from "firebase/auth";
+import {getAuth,} from "firebase/auth";
 
-import { firebaseConfig } from "@/security/firebaseKey.js";
+import {firebaseConfig} from "@/security/firebaseKey.js";
 
 
 // Firebase 초기화
@@ -31,13 +27,33 @@ const auth = getAuth(fireApp);
 const API = {
     // 아이템 관련 API
     item: {
+        // 이미지 파일의 주소를 가져오는 기능 (file_name: string)
+        getImageData: async (file_name) => {
+            const extensions = ["png", "jpg", "jpeg", "gif"];
+
+            for (const extension of extensions) {
+                try {
+                    return await getDownloadURL(
+                        ref(storage, `picture/${file_name}.${extension}`)
+                    );
+                }
+                catch (error) {
+                    if (error.code === "storage/object-not-found") {
+                        continue;
+                    }
+                    else {
+                        console.error("[Error] 알 수 없는 오류!!!");
+                        return error.code;
+                    }
+                }
+            }
+        },
+
         // 아이템 데이터 가공하는 기능 (item: map[id, ...])
         modData: async (item) => {
             try {
                 // 아이템의 이미지 불러오기
-                const imageURL = await getDownloadURL(
-                    ref(storage, `picture/${item.file_name}.*`),
-                );
+                const imageURL = await API.item.getImageData(item.file_name);
 
                 // 아이템의 색상 HEX String으로 변환하기
                 let colorHEX = "#";
@@ -52,7 +68,7 @@ const API = {
                 // 아이템의 위치 정보가 존재하는 지 확인
                 if (locationSnap.exists()) {
                     const locationData = { id: locationSnap.id, ...locationSnap.data() };
-                    const location = { space: locationData.parent.id, address: locationData.address.id };
+                    const location = { space: locationRef.parent.id, address: locationRef.id };
                     return {
                         id: item.id,
                         location: item.location,
@@ -90,7 +106,7 @@ const API = {
                 // 해당 ID의 아이템이 존재하는 지 확인하기
                 if (docSnapshot.exists()) {
                     const item = { id: docSnapshot.id, ...docSnapshot.data() };
-                    
+
                     // 아이템 데이터 가공하기
                     return await API.item.modData(item);
                 }
@@ -593,6 +609,7 @@ const API = {
                 // 저장공간 데이터에 맞는 아이템 정보 가져오기
                 const newStoragesPending = storages.map(async (storage) => {
                     const itemRef = storage.item;
+
                     if (itemRef) {
                         const item = await API.item.getOne(itemRef.id);
                         return {

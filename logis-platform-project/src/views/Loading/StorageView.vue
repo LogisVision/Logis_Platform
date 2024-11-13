@@ -1,6 +1,22 @@
 <script setup>
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
+
+import { ref } from 'vue';
+import { LOGIS_API } from '@/utilities/firebaseAPI.js';
+
+// 저장 공간 데이터 받아오기
+const storages = ref([]);
+const loadAll = ref(false);
+
+const getStorages = async () => {
+  const result = await LOGIS_API.storage.getAll();
+  console.log(result);
+  storages.value = result;
+  loadAll.value = true;
+}
+
+getStorages();
 </script>
 
 <template>
@@ -12,27 +28,37 @@ import headerBox from '@/components/heaaderBox.vue';
       <!-- Basement Viewer -->
       <div class="container mt-3">
         <div class="row">
-          <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="i in 6" :key="i">
+          <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="storage in storages" :key="storage.id">
             <div class="card storage-card-box">
               <div class="card-body">
                 <!-- Card Header -->
                 <div class="storage-card-content pb-2">
-                  <div class="storage-item-id">#00000000</div>
-                  <div class="storage-label">A / 0</div>
+                  <div v-if="storage.item" class="storage-item-id">{{ storage.item_data && storage.item_data.id }}</div>
+                  <div v-else class="storage-item-id">None</div>
+
+                  <div class="storage-label">{{ storage.id }}</div>
                 </div>
 
                 <!-- Item Image -->
                 <div class="text-center mb-2">
-                  <img src="@/assets/images/emptyBox.png" alt="Item Image"
+                  <img v-if="storage.item" :src="(storage.item_data && storage.item_data.image_url)" alt="Item Image"
+                       class="img-fluid storage-item-image">
+                  <img v-else src="@/assets/images/emptyBox.png" alt="Empty"
                        class="img-fluid storage-item-image">
                 </div>
 
                 <!-- Color Info -->
-                <div class="text-center storage-item-color-info mb-2 ">None</div>
+                <div v-if="storage.item" class="text-center storage-item-color-info mb-2"
+                     :style="{ backgroundColor: (storage.item_data && storage.item_data.color_hex) }">
+                  {{ storage.item_data && storage.item_data.color_hex }}
+                </div>
+                <div v-else class="text-center storage-item-color-info mb-2">
+                  None
+                </div>
 
                 <!-- Storage State -->
                 <div class="text-center storage-state mb-3">
-                  Empty Space
+                  {{ storage.state }}
                 </div>
 
                 <!-- Options -->
@@ -46,6 +72,9 @@ import headerBox from '@/components/heaaderBox.vue';
                 </div>
               </div>
             </div>
+          </div>
+          <div v-if="!loadAll" class="d-flex justify-content-center align-items-center" style="height: 100%;">
+            <img src="@/assets/images/loadingImage.gif" alt="Loading">
           </div>
         </div>
       </div>
@@ -70,7 +99,8 @@ import headerBox from '@/components/heaaderBox.vue';
 
 .storage-item-id {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: -2px;
 }
 
 .storage-label {
