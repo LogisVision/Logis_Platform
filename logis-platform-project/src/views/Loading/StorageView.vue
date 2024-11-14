@@ -1,13 +1,19 @@
 <script setup>
+import { useRoute, useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
 import { ref } from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
+// 라우터 초기화
+const route = useRoute();
+const router = useRouter();
+
 // 저장 공간 데이터 받아오기
 const storages = ref([]);
 const loadAll = ref(false);
+const imageLoad = ref(false);
 
 const getStorages = async () => {
   const result = await LOGIS_API.storage.getAll();
@@ -17,6 +23,17 @@ const getStorages = async () => {
 }
 
 getStorages();
+
+// 선택 화면 이동 Handler
+function moveToSelectView(storage_id) {
+  router.push({
+    name: 'waitlist',
+    query: {
+      option: 'select',
+      storageID: storage_id,
+    },
+  });
+}
 </script>
 
 <template>
@@ -33,24 +50,31 @@ getStorages();
               <div class="card-body">
                 <!-- Card Header -->
                 <div class="storage-card-content pb-2">
-                  <div v-if="storage.item" class="storage-item-id">{{ storage.item_data && storage.item_data.id }}</div>
-                  <div v-else class="storage-item-id">None</div>
+                  <div v-if="storage.item" class="storage-item-id text-truncate">
+                    {{ storage.item_data?.id }}
+                  </div>
+                  <div v-else class="storage-item-id text-truncate">None</div>
 
                   <div class="storage-label">{{ storage.id }}</div>
                 </div>
 
                 <!-- Item Image -->
-                <div class="text-center mb-2">
-                  <img v-if="storage.item" :src="(storage.item_data && storage.item_data.image_url)" alt="Item Image"
+                <div class="col mb-2 d-flex flex-column justify-content-center align-items-center">
+                  <img v-if="storage.item" :src="storage.item_data?.image_url" @load="imageLoad = true"
+                       alt="Item Image" class="img-fluid storage-item-image">
+                  <img v-else src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid storage-item-image">
-                  <img v-else src="@/assets/images/emptyBox.png" alt="Empty"
+                  <img v-if="storage.item && !imageLoad" src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid storage-item-image">
                 </div>
 
                 <!-- Color Info -->
                 <div v-if="storage.item" class="text-center storage-item-color-info mb-2"
-                     :style="{ backgroundColor: (storage.item_data && storage.item_data.color_hex) }">
-                  {{ storage.item_data && storage.item_data.color_hex }}
+                     :style="{
+                  backgroundColor: (storage.item_data?.color_hex),
+                  color: (storage.item_data?.text_color_hex)
+                   }">
+                  {{ storage.item_data?.color_hex }}
                 </div>
                 <div v-else class="text-center storage-item-color-info mb-2">
                   None
@@ -58,11 +82,19 @@ getStorages();
 
                 <!-- Storage State -->
                 <div class="text-center storage-state mb-3">
-                  {{ storage.state }}
+                  {{ storage.state.toUpperCase() }}
                 </div>
 
                 <!-- Options -->
-                <div class="row mt-2 justify-content-center">
+                <div v-if="storage.state === 'empty'" class="row mt-2 justify-content-center">
+                  <div class="col-12 align-self-end">
+                    <button class="btn btn-success w-100 text-truncate rounded-btn"
+                    @click="() => { moveToSelectView(storage.id)}">
+                      New
+                    </button>
+                  </div>
+                </div>
+                <div v-else-if="storage.state === 'full'" class="row mt-2 justify-content-center">
                   <div class="col-6 align-self-end">
                     <button class="btn btn-warning w-100 text-truncate rounded-btn">Change</button>
                   </div>
@@ -70,10 +102,15 @@ getStorages();
                     <button class="btn btn-danger w-100 text-truncate rounded-btn">Empty</button>
                   </div>
                 </div>
+                <div v-else class="row mt-2 justify-content-center">
+                  <div class="col-12 align-self-end">
+                    <button class="btn btn-dark w-100 text-truncate rounded-btn" disabled>...</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div v-if="!loadAll" class="d-flex justify-content-center align-items-center" style="height: 100%;">
+          <div v-if="!loadAll" class="loading-box">
             <img src="@/assets/images/loadingImage.gif" alt="Loading">
           </div>
         </div>
@@ -93,14 +130,17 @@ getStorages();
 }
 
 .storage-card-content {
+  width: 100%;
+
   display: flex;
   justify-content: space-between;
 }
 
 .storage-item-id {
+  width: 80%;
+
   font-size: 1.5rem;
   font-weight: 500;
-  letter-spacing: -2px;
 }
 
 .storage-label {
@@ -132,9 +172,5 @@ getStorages();
   color: var(--white-font);
   font-size: 1rem;
   font-weight: 700;
-}
-
-.rounded-btn {
-  border-radius: 20px;
 }
 </style>

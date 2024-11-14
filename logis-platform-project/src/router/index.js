@@ -24,9 +24,24 @@ const router = createRouter({
       component: () => import('@/views/Loading/WaitListView.vue')
     },
     {
-      path: '/loading/register',
-      name: 'register',
-      component: () => import('@/views/Loading/RegisterView.vue')
+      path: '/loading/new',
+      name: 'new-item',
+      component: () => import('@/views/Loading/NewItemView.vue')
+    },
+    {
+      path: '/command/request',
+      name: 'new-command',
+      component: () => import('@/views/Command/RequestView.vue')
+    },
+    {
+      path: '/command/pending',
+      name: 'pending-command',
+      component: () => import('@/views/Command/PendingView.vue')
+    },
+    {
+      path: '/command/completed',
+      name: 'completed-command',
+      component: () => import('@/views/Command/CompleteView.vue')
     },
     {
       path: '/settings',

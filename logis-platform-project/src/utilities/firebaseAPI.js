@@ -5,15 +5,16 @@
 // 필요한 Firebase 라이브러리 불러오기
 import {initializeApp} from "firebase/app";
 
-import {
-    addDoc, collection, deleteDoc, deleteField, doc, getDoc, getDocs, getFirestore, serverTimestamp, updateDoc,
-} from "firebase/firestore";
+import { addDoc, collection, deleteDoc, deleteField, doc, getDoc, getDocs, getFirestore, serverTimestamp, updateDoc, }
+    from "firebase/firestore";
 
-import {deleteObject, getDownloadURL, getStorage, ref, uploadBytes,} from "firebase/storage";
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes, } from "firebase/storage";
 
-import {getAuth,} from "firebase/auth";
+import { getAuth, } from "firebase/auth";
 
-import {firebaseConfig} from "@/security/firebaseKey.js";
+import { firebaseConfig } from "@/security/firebaseKey.js";
+
+import { Color } from "@/utilities/colorModule.js";
 
 
 // Firebase 초기화
@@ -55,6 +56,9 @@ const API = {
                 // 아이템의 이미지 불러오기
                 const imageURL = await API.item.getImageData(item.file_name);
 
+                // 텍스트 컬러 결정하기
+                const textColor = Color.getTextColor(item.color);
+
                 // 아이템의 색상 HEX String으로 변환하기
                 let colorHEX = "#";
                 colorHEX += item.color.red.toString(16).toUpperCase().padStart(2, "0");
@@ -79,6 +83,7 @@ const API = {
                                 green: item.color.green,
                                 blue: item.color.blue
                             },
+                        text_color_hex: textColor,
                         color_hex: colorHEX,
                         file_name: item.file_name,
                         image_url: imageURL,
