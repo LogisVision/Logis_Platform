@@ -93,7 +93,7 @@ const moveToNewCommand = (item_id, address) => {
                 </div>
               </div>
               <div v-if="route.query.option === 'select'">
-                <div v-if="income.state === 'full'" class="col-12 align-self-end">
+                <div v-if="income.state === 'income'" class="col-12 align-self-end">
                   <button class="btn btn-success w-100 text-truncate rounded-btn"
                   @click="() => { moveToNewCommand(income.item_data?.id, route.query.storageID) }">
                     Select
@@ -108,8 +108,8 @@ const moveToNewCommand = (item_id, address) => {
               </div>
               <div v-else>
                 <div class="col-12 align-self-end">
-                  <div v-if="income.state === 'full'" class="col-12 align-self-end">
-                    <button class="btn btn-success w-100 text-truncate rounded-btn" disabled>Full</button>
+                  <div v-if="income.state === 'income'" class="col-12 align-self-end">
+                    <button class="btn btn-success w-100 text-truncate rounded-btn" disabled>Income</button>
                   </div>
                   <div v-else-if="income.state === 'progress'" class="col-12 align-self-end">
                     <button class="btn btn-dark w-100 text-truncate rounded-btn" disabled>Progress...</button>

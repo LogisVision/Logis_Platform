@@ -50,6 +50,16 @@ const API = {
             }
         },
 
+        // 컬러 정보를 Hex String으로 가공하는 기능 (color: map[red, green, blue])
+        colorDataToHex: (color) => {
+            let colorHEX = "#";
+            colorHEX += color.red.toString(16).toUpperCase().padStart(2, "0");
+            colorHEX += color.green.toString(16).toUpperCase().padStart(2, "0");
+            colorHEX += color.blue.toString(16).toUpperCase().padStart(2, "0");
+
+            return colorHEX;
+        },
+
         // 아이템 데이터 가공하는 기능 (item: map[id, ...])
         modData: async (item) => {
             try {
@@ -59,11 +69,8 @@ const API = {
                 // 텍스트 컬러 결정하기
                 const textColor = Color.getTextColor(item.color);
 
-                // 아이템의 색상 HEX String으로 변환하기
-                let colorHEX = "#";
-                colorHEX += item.color.red.toString(16).toUpperCase().padStart(2, "0");
-                colorHEX += item.color.green.toString(16).toUpperCase().padStart(2, "0");
-                colorHEX += item.color.blue.toString(16).toUpperCase().padStart(2, "0");
+                // 아이템의 색상 HEX string으로 변환하기
+                let colorHEX = API.item.colorDataToHex(item.color);
 
                 // 아이템의 위치 정보 불러오기
                 const locationRef = item.location;
@@ -175,7 +182,7 @@ const API = {
                 await uploadBytes(ref(storage, `picture/${uploadFileName}`), file);
 
                 // 위치 정보에도 데이터 반영하기
-                await API.item.locationAdd(itemRef, newLocation);
+                await API.item.locationAdd(itemRef, newLocation, "income");
 
                 console.log("[System] 새로운 아이템이 성공적으로 등록되었습니다.");
                 return 201;
@@ -201,7 +208,7 @@ const API = {
 
                 // 위치 정보에 반영하기
                 await API.item.locationDelete(item);
-                await API.item.locationAdd(itemRef, newLocation);
+                await API.item.locationAdd(itemRef, newLocation, newState);
 
                 await updateDoc(doc(database, "items", item.id), newItemData);
                 console.log("[System] 아이템 정보가 성공적으로 변경되었습니다.");
@@ -239,11 +246,11 @@ const API = {
             try {
                 if (item.location_data.space === "incomings") {
                     await API.incoming.removeItem(item.location_data.address);
-                    await API.incoming.updateState(item.location_data.address, "full");
+                    await API.incoming.updateState(item.location_data.address, "empty");
                 }
                 else if (item.location_data.space === "workspaces") {
                     await API.workspace.removeItem(item.location_data.address);
-                    await API.workspace.updateState(item.location_data.address, "full");
+                    await API.workspace.updateState(item.location_data.address, "empty");
                 }
                 else if (item.location_data.space === "storages") {
                     await API.storage.removeItem(item.location_data.address);
@@ -258,20 +265,20 @@ const API = {
             }
         },
 
-        // 위치정보에서 아이템 정보를 추가하는 기능 (itemRef: itemRef, newLocation: map[space, address])
-        locationAdd: async (itemRef, newLocation) => {
+        // 위치정보에서 아이템 정보를 추가하는 기능 (itemRef: itemRef, newLocation: map[space, address], state: string)
+        locationAdd: async (itemRef, newLocation, state) => {
             try {
                 if (newLocation.space === "incomings") {
                     await API.incoming.addItem(newLocation.address, itemRef);
-                    await API.incoming.updateState(newLocation.address, "full");
+                    await API.incoming.updateState(newLocation.address, state);
                 }
                 else if (newLocation.space === "workspaces") {
                     await API.workspace.addItem(newLocation.address, itemRef);
-                    await API.workspace.updateState(newLocation.address, "full");
+                    await API.workspace.updateState(newLocation.address, state);
                 }
                 else if (newLocation.space === "storages") {
                     await API.storage.addItem(newLocation.address, itemRef);
-                    await API.storage.updateState(newLocation.address, "full");
+                    await API.storage.updateState(newLocation.address, state);
                 }
 
                 console.log("[System] 해당 위치정보에 아이템을 성공적으로 추가하였습니다.");
@@ -364,7 +371,7 @@ const API = {
             }
         },
 
-        // 입고라인 상태를 업데이트하는 기능
+        // 입고라인 상태를 업데이트하는 기능 (id: string, state: string)
         updateState: async (id, state) => {
             // 변경된 상태 정보 생성
             const newIncomingData = {
@@ -502,7 +509,7 @@ const API = {
             }
         },
 
-        // 작업공간 상태를 업데이트하는 기능
+        // 작업공간 상태를 업데이트하는 기능 (id: string, state: string)
         updateState: async (id, state) => {
             // 변경된 상태 정보 생성
             const newWorkspaceData = {
@@ -642,7 +649,7 @@ const API = {
         },
 
 
-        // 저장공간 상태를 업데이트하는 기능
+        // 저장공간 상태를 업데이트하는 기능 (id: string, state: string)
         updateState: async (id, state) => {
             // 변경된 상태 정보 생성
             const newStorageData = {
@@ -746,7 +753,7 @@ const API = {
             }
         },
 
-        // AGV 상태를 업데이트하는 기능
+        // AGV 상태를 업데이트하는 기능 (id: string, state: string, location: map[space, address])
         updateState: async (id, state, location) => {
             // 변경된 상태 정보 생성
             const newRobotData = {
@@ -906,10 +913,10 @@ const API = {
                 if (item.location_data.space === "incomings" && destination.space === "storages") {
                     // [입고 절차]
                     // 각 공간과 아이템을 점유 상태로 만들기
+                    await API.item.update(item, item.location_data, "progress");
                     await API.incoming.updateState(item.location_data.address, "progress");
                     await API.workspace.updateState(selectedWorkspace, "progress");
                     await API.storage.updateState(destination.address, "progress");
-                    await API.item.updateState(item.id, "progress");
 
                     // 첫 번째 명령어 만들기
                     const newFirstCommand = {
@@ -920,6 +927,7 @@ const API = {
                             state: "progress",
                         },
                         item: {
+                            id: item.id,
                             color: {
                                 red: item.color.red,
                                 green: item.color.green,
@@ -938,6 +946,7 @@ const API = {
 
                     // 첫 번째 명령어 전송
                     const firstCommandRef = await addDoc(collection(database, "commands"), newFirstCommand);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
 
                     // 두 번째 명령어 만들기
                     const newSecondCommand = {
@@ -948,6 +957,7 @@ const API = {
                             state: "progress",
                         },
                         item: {
+                            id: item.id,
                             color: {
                                 red: item.color.red,
                                 green: item.color.green,
@@ -967,14 +977,17 @@ const API = {
 
                     // 두 번째 명령어 전송
                     await addDoc(collection(database, "commands"), newSecondCommand);
+
+                    console.log("[System] 새로운 명령어가 생성되었습니다!");
+                    return 201;
                 }
                 else if (item.location_data.space === "storages" && destination.space === "incomings") {
                     // [출고 절차]
                     // 각 공간과 아이템을 점유 상태로 만들기
+                    await API.item.update(item, item.location_data, "progress");
                     await API.storage.updateState(item.location_data.address, "progress");
                     await API.workspace.updateState(selectedWorkspace, "progress");
                     await API.incoming.updateState(destination.address, "progress");
-                    await API.item.updateState(item.id, "progress");
 
                     // 첫 번째 명령어 만들기
                     const newFirstCommand = {
@@ -985,6 +998,7 @@ const API = {
                             state: "progress",
                         },
                         item: {
+                            id: item.id,
                             color: {
                                 red: item.color.red,
                                 green: item.color.green,
@@ -1003,6 +1017,7 @@ const API = {
 
                     // 첫 번째 명령어 전송
                     const firstCommandRef = await addDoc(collection(database, "commands"), newFirstCommand);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
 
                     // 두 번째 명령어 만들기
                     const newSecondCommand = {
@@ -1013,6 +1028,7 @@ const API = {
                             state: "progress",
                         },
                         item: {
+                            id: item.id,
                             color: {
                                 red: item.color.red,
                                 green: item.color.green,
@@ -1043,6 +1059,40 @@ const API = {
             }
         },
 
+        // 명령어를 완료 처리하는 기능 (command: map[id, ...])
+        complete: async (command) => {
+            if (command.state === "lock") {
+                console.error("[Error] 잠긴 명령어를 완료할 수 없습니다!!!");
+                return 403;
+            }
+
+            try {
+                // 아이템 정보 얻어오기
+                const item = await API.item.getOne(command.item.id);
+
+                // 목적지에 따라서 아이템 및 위치정보 변경하기
+                if (command.destination.space === "workspaces") {
+                    await API.item.update(item, command.destination, "progress");
+                }
+                else if (command.destination.space === "storages") {
+                    await API.item.update(item, command.destination, "stored");
+                }
+                else if (command.destination.space === "incomings") {
+                    await API.item.update(item, command.destination, "income");
+                }
+
+                // 명령어 상태 변경하기
+                await API.command.update(command.id, "completed");
+
+                console.log("[System] 명령어를 완료처리 하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
+        },
+
         // 선행 명령어가 완료되었는지 확인하는 기능
         check: async () => {
             try {
@@ -1053,15 +1103,15 @@ const API = {
                 const lockedCommands = requestedCommands.filter(command => command.state === "lock");
 
                 for (const command of lockedCommands) {
-                    if (command.item.forward_data.state === "completed") {
-                        await API.workspace.updateState(command.id, "request");
+                    if (command.forward_data.state === "completed") {
+                        await API.command.update(command.id, "request");
                         console.log("[System] 선행 명령어가 수행이 완료되어 명령어의 잠금이 해제되었습니다.");
                         return 200;
                     }
                 }
             }
             catch (error) {
-                console.error("[Error] 아이템 정보를 삭제하는데 실패하였습니다.");
+                console.error("[Error] 알 수 없는 오류!!!");
                 return error.code;
             }
         },

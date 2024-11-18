@@ -25,7 +25,7 @@ const getStorages = async () => {
 getStorages();
 
 // 선택 화면 이동 Handler
-function moveToSelectView(storage_id) {
+const moveToSelectView = (storage_id) => {
   router.push({
     name: 'waitlist',
     query: {
@@ -33,6 +33,16 @@ function moveToSelectView(storage_id) {
       storageID: storage_id,
     },
   });
+}
+
+// 물건 삭제 Handler (***모든 공간에서 삭제됨!!!***)
+const deleteItem = async (item) => {
+  await LOGIS_API.storage.remove(item.id);
+
+  // 아이템까지 삭제하기
+  await LOGIS_API.item.delete(item);
+
+  router.go(0);
 }
 </script>
 
@@ -94,12 +104,15 @@ function moveToSelectView(storage_id) {
                     </button>
                   </div>
                 </div>
-                <div v-else-if="storage.state === 'full'" class="row mt-2 justify-content-center">
+                <div v-else-if="storage.state === 'stored'" class="row mt-2 justify-content-center">
                   <div class="col-6 align-self-end">
-                    <button class="btn btn-warning w-100 text-truncate rounded-btn">Change</button>
+                    <!-- 구현되지 않은 기능-->
+                    <button class="btn btn-warning w-100 text-truncate rounded-btn" disabled>Change</button>
                   </div>
                   <div class="col-6 align-self-end">
-                    <button class="btn btn-danger w-100 text-truncate rounded-btn">Empty</button>
+                    <button class="btn btn-danger w-100 text-truncate rounded-btn" @click="() => { deleteItem(storage.item) }">
+                      Empty
+                    </button>
                   </div>
                 </div>
                 <div v-else class="row mt-2 justify-content-center">

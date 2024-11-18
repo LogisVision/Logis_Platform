@@ -23,6 +23,26 @@ const getItem = async () => {
 };
 
 getItem();
+
+// 최종적으로 새로운 Command를 만들고 Requested Command View로 이동하는 Handler
+const createCommand = async () => {
+  const itemID = route.query.itemID;
+  const destination = {
+    address: route.query.address,
+    space: route.query.space
+  };
+
+  const itemObject = await LOGIS_API.item.getOne(itemID);
+  if (itemObject) {
+    const result = await LOGIS_API.command.request(itemObject, destination);
+    console.log(result);
+    await router.push({name: 'pending-command'});
+  }
+  else {
+    // 해당 아이템이 없음
+    console.error("[Error] 해당 아이템에 대한 자세한 정보가 없습니다.");
+  }
+}
 </script>
 
 <template>
@@ -94,7 +114,8 @@ getItem();
         </div>
         <div class="d-flex justify-content-center" style="margin-top: 3vh">
           <button class="btn btn-success text-truncate rounded-btn create-btn"
-                  :disabled="!(route.query.itemID && route.query.space && route.query.address)">
+                  :disabled="!(route.query.itemID && route.query.space && route.query.address)"
+                  @click="createCommand">
             Create
           </button>
         </div>
