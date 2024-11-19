@@ -10,6 +10,7 @@ import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 const route = useRoute();
 const router = useRouter();
 
+// 새로운 변수
 const loadAll = ref(false);
 const imageLoad = ref(false);
 const title = ref('Items in Wait List');
@@ -18,7 +19,11 @@ const title = ref('Items in Wait List');
 const changeTitle = () => {
   if (route.query.option === 'select') {
     title.value = 'Please select an item to storage';
-  } else {
+  }
+  else if (route.query.option === 'new') {
+    title.value = 'Please select an item to wait';
+  }
+  else {
     title.value = 'Items in Wait List';
   }
 }
@@ -46,7 +51,18 @@ const moveToNewCommand = (item_id, address) => {
       address: address,
     },
   });
-}
+};
+
+// 새로운 아이템 만드는 링크로 이동하는 handler
+const moveToNewItem = (address) => {
+  router.push({
+    name: 'new-item',
+    query: {
+      space: 'incomings',
+      address: address,
+    },
+  });
+};
 </script>
 
 <template>
@@ -104,6 +120,22 @@ const moveToNewCommand = (item_id, address) => {
                 </div>
                 <div v-else-if="income.state === 'empty'" class="col-12 align-self-end">
                   <button class="btn btn-light w-100 text-truncate rounded-btn" disabled>Empty</button>
+                </div>
+              </div>
+              <div v-else-if="route.query.option === 'new'">
+                <div v-if="income.state === 'income'" class="col-12 align-self-end">
+                  <button class="btn btn-light w-100 text-truncate rounded-btn" disabled>
+                    Income
+                  </button>
+                </div>
+                <div v-else-if="income.state === 'progress'" class="col-12 align-self-end">
+                  <button class="btn btn-dark w-100 text-truncate rounded-btn" disabled>Progress...</button>
+                </div>
+                <div v-else-if="income.state === 'empty'" class="col-12 align-self-end">
+                  <button class="btn btn-success w-100 text-truncate rounded-btn"
+                          @click="() => { moveToNewItem(income.id) }">
+                    Select
+                  </button>
                 </div>
               </div>
               <div v-else>

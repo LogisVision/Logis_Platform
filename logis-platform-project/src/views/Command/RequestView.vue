@@ -10,6 +10,7 @@ import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 const route = useRoute();
 const router = useRouter();
 
+// 새로운 변수
 const imageLoad = ref(false);
 
 // 아이템 정보 받아오기

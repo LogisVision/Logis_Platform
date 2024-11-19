@@ -11,8 +11,8 @@ import { Color } from "@/utilities/colorModule.js";
 const route = useRoute();
 const router = useRouter();
 
+// 새로운 변수
 const loadAll = ref(false);
-const imageLoad = ref(false);
 
 // 완료된 명령어 받아오기
 const completedCommands = ref([]);
@@ -89,10 +89,10 @@ const deleteCommand = async (command) => {
                 <!-- Color Info -->
                 <div class="mt-2 text-center ps-4 pe-4 item-color-info text-truncate"
                      :style="{
-                  backgroundColor: LOGIS_API.item.colorDataToHex(command.item.color),
+                  backgroundColor: Color.colorDataToHex(command.item.color),
                    color: Color.getTextColor(command.item.color)
                 }">
-                  {{ LOGIS_API.item.colorDataToHex(command.item.color) }}
+                  {{ Color.colorDataToHex(command.item.color) }}
                 </div>
               </div>
             </div>

@@ -34,9 +34,14 @@ const API = {
 
             for (const extension of extensions) {
                 try {
-                    return await getDownloadURL(
-                        ref(storage, `picture/${file_name}.${extension}`)
-                    );
+                    const result = {
+                        url: await getDownloadURL(
+                            ref(storage, `picture/${file_name}.${extension}`)
+                        ),
+                        full_name: `${file_name}.${extension}`,
+                    }
+
+                    return result;
                 }
                 catch (error) {
                     if (error.code === "storage/object-not-found") {
@@ -50,27 +55,18 @@ const API = {
             }
         },
 
-        // 컬러 정보를 Hex String으로 가공하는 기능 (color: map[red, green, blue])
-        colorDataToHex: (color) => {
-            let colorHEX = "#";
-            colorHEX += color.red.toString(16).toUpperCase().padStart(2, "0");
-            colorHEX += color.green.toString(16).toUpperCase().padStart(2, "0");
-            colorHEX += color.blue.toString(16).toUpperCase().padStart(2, "0");
-
-            return colorHEX;
-        },
-
         // 아이템 데이터 가공하는 기능 (item: map[id, ...])
         modData: async (item) => {
             try {
                 // 아이템의 이미지 불러오기
-                const imageURL = await API.item.getImageData(item.file_name);
+                const imageData = await API.item.getImageData(item.file_name);
+                const imageURL = imageData.url;
 
                 // 텍스트 컬러 결정하기
                 const textColor = Color.getTextColor(item.color);
 
                 // 아이템의 색상 HEX string으로 변환하기
-                let colorHEX = API.item.colorDataToHex(item.color);
+                let colorHEX = Color.colorDataToHex(item.color);
 
                 // 아이템의 위치 정보 불러오기
                 const locationRef = item.location;
@@ -163,7 +159,7 @@ const API = {
             // 파일명 생성하기
             const timestamp = Date.now();
             const fileName = `${timestamp}_${file.name.split('.')[0]}`;
-            const uploadFileName = `${fileName}.${file.name}`;
+            const uploadFileName = `${timestamp}_${file.name}`;
 
             // 아이템 위치 정보 레퍼런스 만들기
             const locationRef = doc(database, newLocation.space, newLocation.address);
@@ -223,8 +219,11 @@ const API = {
         // 아이템을 삭제하는 기능 (item: map[id, ...])
         delete: async (item) => {
             try {
+                console.log(item);
                 // 아이템 이미지 삭제
-                await deleteObject(ref(storage, `picture/${item.file_name}.*`));
+                const imageData = await API.item.getImageData(item.file_name);
+                const fullName = imageData.full_name;
+                await deleteObject(ref(storage, `picture/${fullName}`));
 
                 // 아이템 삭제
                 await deleteDoc(doc(database, "items", item.id));

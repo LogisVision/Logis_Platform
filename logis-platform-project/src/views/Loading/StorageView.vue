@@ -36,13 +36,11 @@ const moveToSelectView = (storage_id) => {
 }
 
 // 물건 삭제 Handler (***모든 공간에서 삭제됨!!!***)
-const deleteItem = async (item) => {
-  await LOGIS_API.storage.remove(item.id);
-
-  // 아이템까지 삭제하기
+const deleteItem = async (address, item) => {
+  await LOGIS_API.storage.removeItem(address);
   await LOGIS_API.item.delete(item);
-
-  router.go(0);
+  await LOGIS_API.storage.updateState(address, 'empty');
+  // router.go(0);
 }
 </script>
 
@@ -110,7 +108,8 @@ const deleteItem = async (item) => {
                     <button class="btn btn-warning w-100 text-truncate rounded-btn" disabled>Change</button>
                   </div>
                   <div class="col-6 align-self-end">
-                    <button class="btn btn-danger w-100 text-truncate rounded-btn" @click="() => { deleteItem(storage.item) }">
+                    <button class="btn btn-danger w-100 text-truncate rounded-btn"
+                            @click="() => { deleteItem(storage.id, storage.item_data) }">
                       Empty
                     </button>
                   </div>

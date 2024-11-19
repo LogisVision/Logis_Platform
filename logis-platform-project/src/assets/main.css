@@ -41,6 +41,8 @@ option {
     --black-current-finaly-background : #322700;
     --black-target-background : #02424a;
     --black-target-finaly-background : #002429;
+    --black-new-background : #035532;
+    --black-new-finaly-background : #02351f;
 
     /* font colors */
     --white-font : #FFFFFF;
