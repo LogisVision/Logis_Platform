@@ -12,6 +12,7 @@ const router = useRouter();
 
 // 새로운 변수
 const imageLoad = ref(false);
+const pendingCommand = ref(false);
 
 // 아이템 정보 받아오기
 const item = ref(null);
@@ -27,6 +28,8 @@ getItem();
 
 // 최종적으로 새로운 Command를 만들고 Requested Command View로 이동하는 Handler
 const createCommand = async () => {
+  pendingCommand.value = true;
+
   const itemID = route.query.itemID;
   const destination = {
     address: route.query.address,
@@ -37,10 +40,12 @@ const createCommand = async () => {
   if (itemObject) {
     const result = await LOGIS_API.command.request(itemObject, destination);
     console.log(result);
+    pendingCommand.value = false;
     await router.push({name: 'pending-command'});
   }
   else {
     // 해당 아이템이 없음
+    pendingCommand.value = false;
     console.error("[Error] 해당 아이템에 대한 자세한 정보가 없습니다.");
   }
 }
@@ -115,10 +120,14 @@ const createCommand = async () => {
         </div>
         <div class="d-flex justify-content-center" style="margin-top: 3vh">
           <button class="btn btn-success text-truncate rounded-btn create-btn"
-                  :disabled="!(route.query.itemID && route.query.space && route.query.address)"
+                  :disabled="!(route.query.itemID && route.query.space && route.query.address) || pendingCommand"
                   @click="createCommand">
             Create
           </button>
+        </div>
+
+        <div v-if="pendingCommand" class="loading-box">
+          <img src="@/assets/images/loadingImage.gif" alt="Loading">
         </div>
       </div>
     </main>
