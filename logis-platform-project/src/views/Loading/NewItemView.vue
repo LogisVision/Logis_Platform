@@ -2,10 +2,10 @@
 import { useRoute, useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
-import { Color } from "@/utilities/colorModule.js";
 
 import { ref } from 'vue';
 import { LOGIS_API } from "@/utilities/firebaseAPI.js";
+import { Color } from "@/utilities/colorModule.js";
 
 // 라우터 초기화
 const route = useRoute();
@@ -17,6 +17,11 @@ const newColor = ref({ red: 0, green: 0, blue: 0});
 const newImage = ref(null);
 const newImageURL = ref('');
 
+// 이미지 자르기 변수
+const cropper = ref(null);
+const croppedImage = ref(null);
+const croppedImageURL = ref('');
+
 // 이미지 미리보기
 const previewImage = async (event) => {
   const file = event.target.files[0];
@@ -24,11 +29,27 @@ const previewImage = async (event) => {
     newImage.value = file;
     newImageURL.value = URL.createObjectURL(file);
   }
+};
 
-  // 이미지 대표 색상 얻어오기
-  const color = await Color.getPrimaryColor(newImageURL.value);
-  newColorHex.value =  Color.colorDataToHex(color);
-  newColor.value = color;
+// 이미지 자르기
+const getCroppedImage = async () => {
+  if (cropper.value) {
+    const canvas = cropper.value.getCroppedCanvas();
+    croppedImageURL.value = canvas.toDataURL();
+
+    canvas.toBlob((blob) => {
+      console.log(newImage.value);
+      const fileName = newImage.value.name;
+      croppedImage.value = new File([blob], fileName,
+          { type: blob.type, lastModified: Date.now() });
+      console.log(croppedImage.value);
+    });
+
+    // 이미지 대표 색상 얻어오기
+    const color = await Color.getPrimaryColor(croppedImageURL.value);
+    newColorHex.value =  Color.colorDataToHex(color);
+    newColor.value = color;
+  }
 };
 
 // 대기 위치 선택 링크로 이동하는 Handler
@@ -52,7 +73,7 @@ const changeColor = () => {
 // 아이템을 새롭게 만들어서 추가하는 Handler
 const createNewItem = async () => {
   const newLocation = { space: route.query.space, address: route.query.address, };
-  const result = await LOGIS_API.item.add(newColor.value, newLocation, newImage.value);
+  const result = await LOGIS_API.item.add(newColor.value, newLocation, croppedImage.value);
   console.log(result);
 
   await router.push({name: 'waitlist',});
@@ -104,10 +125,15 @@ const createNewItem = async () => {
             <div class="card item-card-box">
               <div class="card-body">
                 <!-- Item Image -->
-                <div class="col mb-3 d-flex flex-column justify-content-center align-items-center">
-                  <img v-if="!newImageURL" src="@/assets/images/empty.png" alt="Empty"
+                <div class="col mb-3 d-flex flex-row justify-content-center align-items-center">
+                  <div class="cropper-box me-4" v-if="newImage">
+                    <vue-cropper ref="cropper" v-if="newImageURL" :src="newImageURL"
+                                 :aspectRatio="1" :zoomable="false" :auto-crop-area="1"></vue-cropper>
+                    <button class="btn btn-secondary mt-3 rounded-btn w-100" @click="getCroppedImage">Crop</button>
+                  </div>
+                  <img v-if="!croppedImage" src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid item-image">
-                  <img v-else :src="newImageURL" alt="New Item Image"
+                  <img v-else :src="croppedImageURL" alt="New Item Image"
                        class="img-fluid item-image">
                 </div>
 
@@ -122,7 +148,7 @@ const createNewItem = async () => {
                 <div class="row mt-3 justify-content-center">
                   <div class="col-12 align-self-end">
                     <button class="btn btn-success w-100 text-truncate rounded-btn"
-                            :disabled="(!route.query.space || !route.query.address || !newImage)"
+                            :disabled="(!route.query.space || !route.query.address || !croppedImage)"
                             @click="createNewItem">
                       Create
                     </button>
@@ -195,8 +221,14 @@ const createNewItem = async () => {
 }
 
 .item-image {
-  width: 40%;
+  width: 60%;
   max-width: 300px;
+
+  border-radius: 20px;
+}
+
+.cropper-box {
+  width: 60%;
 
   border-radius: 20px;
 }

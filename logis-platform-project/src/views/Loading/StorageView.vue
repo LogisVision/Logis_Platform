@@ -6,7 +6,6 @@ import headerBox from '@/components/heaaderBox.vue';
 import { ref } from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
-
 // 라우터 초기화
 const route = useRoute();
 const router = useRouter();
@@ -41,7 +40,7 @@ const deleteItem = async (address, item) => {
   await LOGIS_API.storage.removeItem(address);
   await LOGIS_API.item.delete(item);
   await LOGIS_API.storage.updateState(address, 'empty');
-  // router.go(0);
+  router.go(0);
 }
 </script>
 
@@ -69,12 +68,17 @@ const deleteItem = async (address, item) => {
 
                 <!-- Item Image -->
                 <div class="col mb-2 d-flex flex-column justify-content-center align-items-center">
-                  <img v-if="storage.item" :src="storage.item_data?.image_url" @load="imageLoad = true"
-                       alt="Item Image" class="img-fluid storage-item-image">
-                  <img v-else src="@/assets/images/empty.png" alt="Empty"
-                       class="img-fluid storage-item-image">
-                  <img v-if="storage.item && !imageLoad" src="@/assets/images/empty.png" alt="Empty"
-                       class="img-fluid storage-item-image">
+                  <img src="@/assets/images/empty.png" alt="Empty"
+                       class="img-fluid storage-item-image"
+                       :style="{opacity: (imageLoad && storage.item) ? 0.3 : 1}"
+                  >
+
+                  <img src="@/assets/images/empty.png" alt="Empty"
+                       class="img-fluid storage-item-image storage-item-image-background"
+                       :style="{opacity: (imageLoad && storage.item) ? 0.3 : 1}">
+                  <img v-if="storage.item" :src="storage.item_data?.image_url"
+                       alt="Item Image" class="img-fluid storage-item-image storage-item-image-foreground"
+                       @load="imageLoad = true">
                 </div>
 
                 <!-- Color Info -->
@@ -167,6 +171,18 @@ const deleteItem = async (address, item) => {
   max-width: 200px;
 
   border-radius: 20px;
+}
+
+.storage-item-image-background {
+  position: absolute;
+  z-index: 0;
+  scale: 0.9;
+}
+
+.storage-item-image-foreground {
+  position: absolute;
+  z-index: 1;
+  scale: 0.9;
 }
 
 .storage-state {

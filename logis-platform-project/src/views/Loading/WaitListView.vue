@@ -6,7 +6,6 @@ import headerBox from '@/components/heaaderBox.vue';
 import { ref } from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
-
 // 라우터 초기화
 const route = useRoute();
 const router = useRouter();
@@ -83,12 +82,16 @@ const moveToNewItem = (address) => {
               <div class="mb-2 d-flex align-items-center">
                 <!-- Item Image -->
                 <div class="d-flex flex-column justify-content-center align-items-center">
-                  <img v-if="income.item" :src="(income.item_data?.image_url)" alt="Item Image" @load="imageLoad = true"
-                       class="img-fluid wait-item-image">
-                  <img v-else src="@/assets/images/empty.png" alt="Empty"
-                       class="img-fluid wait-item-image">
-                  <img v-if="income.item && !imageLoad" src="@/assets/images/empty.png" alt="Empty"
-                       class="img-fluid wait-item-image">
+                  <img src="@/assets/images/empty.png" alt="Empty"
+                       class="img-fluid wait-item-image"
+                       :style="{opacity: (imageLoad && income.item) ? 0.3 : 1}">
+
+                  <img src="@/assets/images/empty.png" alt="Empty"
+                       class="img-fluid wait-item-image wait-item-image-background"
+                       :style="{opacity: (imageLoad && income.item) ? 0.3 : 1}">
+                  <img v-if="income.item" :src="(income.item_data?.image_url)" alt="Item Image"
+                       class="img-fluid wait-item-image wait-item-image-foreground"
+                       @load="imageLoad = true">
                 </div>
 
                 <div class="ms-3 me-3 wait-item-info-box">
@@ -178,6 +181,16 @@ const moveToNewItem = (address) => {
 .wait-item-image {
   max-width: 100px;
   border-radius: 20px;
+}
+
+.wait-item-image-background {
+  position: absolute;
+  z-index: 0;
+}
+
+.wait-item-image-foreground {
+  position: absolute;
+  z-index: 1;
 }
 
 .wait-item-info-box {

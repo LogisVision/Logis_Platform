@@ -127,6 +127,13 @@ const deleteCommand = async (command) => {
             </button>
           </div>
         </div>
+
+        <div v-if="loadAll && completedCommands.length === 0" class="page-container">
+          <span class="ps-2 pe-2 material-symbols-sharp nothing-icon">
+                mood_bad
+          </span>
+          <div class="nothing-message">There is nothing here!</div>
+        </div>
       </div>
 
     </main>
@@ -265,5 +272,28 @@ const deleteCommand = async (command) => {
   margin: 3px 0 0 -1px;
   font-size: 2rem;
   color: var(--white-font);
+}
+
+.page-container {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 10vh 0;
+}
+
+.nothing-message {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--white-30-font);
+}
+
+.nothing-icon {
+  margin: 3px 0 0 -1px;
+  font-size: 8rem;
+  color: var(--white-30-font);
 }
 </style>

@@ -84,7 +84,7 @@ const API = {
         getRequested: async () => {
             try {
                 // 모든 명령어 불러오기
-                const commands = await LOGIS_API.command.getAll();
+                const commands = await API.command.getAll();
 
                 // 수행이 완료되지 않은 명령어 추출하기
                 return commands.filter(command => command.state !== "completed");
@@ -99,7 +99,7 @@ const API = {
         getTargetOne: async (id) => {
             try {
                 // 수행되지 않은 명령어 불러오기
-                const requestedCommands = await LOGIS_API.command.getRequested();
+                const requestedCommands = await API.command.getRequested();
 
                 // 해당 로봇에게 주어진 명령어만 추출하기
                 let targetCommands = requestedCommands.filter(command => command.robot === id);
@@ -124,7 +124,7 @@ const API = {
         getDone: async () => {
             try {
                 // 모든 명령어 불러오기
-                const commands = await LOGIS_API.command.getAll();
+                const commands = await API.command.getAll();
 
                 // 수행이 완료된 명령어 추출하기
                 return commands.filter(command => command.state === "completed");

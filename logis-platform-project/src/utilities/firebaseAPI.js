@@ -74,6 +74,7 @@ const API = {
 
                 // 아이템의 위치 정보 불러오기
                 const locationRef = item.location;
+                const locationSnap = await getDoc(locationRef);
 
                 // 아이템의 위치 정보가 존재하는 지 확인
                 if (locationSnap.exists()) {
