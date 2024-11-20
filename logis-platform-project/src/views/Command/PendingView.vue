@@ -4,7 +4,7 @@ import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
 import { ref } from 'vue';
-import { LOGIS_API } from '@/utilities/firebaseAPI.js';
+import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
 
 // 라우터 초기화
@@ -18,7 +18,7 @@ const loadAll = ref(false);
 const pendingCommands = ref([]);
 
 const getPendingCommands = async () => {
-  let result = await LOGIS_API.command.getRequested();
+  let result = await COMMAND_API.command.getRequested();
   if (result.length > 0) {
     result.sort((first, second) => first.datetime - second.datetime);
   }
@@ -31,17 +31,17 @@ getPendingCommands();
 
 // 명령어를 강제로 완료시키는 Handler
 const forcedCompleteCommand = async (command) => {
-  const result = await LOGIS_API.command.complete(command);
+  const result = await COMMAND_API.command.complete(command);
   console.log(result);
 
   // 잠긴 명령어 갱신하기
-  await LOGIS_API.command.check();
+  await COMMAND_API.command.check();
   router.go(0);
 }
 
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {
-  const result = await LOGIS_API.command.delete(command);
+  const result = await COMMAND_API.command.delete(command);
   console.log(result);
   router.go(0);
 }

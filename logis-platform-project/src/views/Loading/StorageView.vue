@@ -6,6 +6,7 @@ import headerBox from '@/components/heaaderBox.vue';
 import { ref } from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
+
 // 라우터 초기화
 const route = useRoute();
 const router = useRouter();
