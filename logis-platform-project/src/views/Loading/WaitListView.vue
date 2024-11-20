@@ -144,8 +144,13 @@ const moveToNewItem = (address) => {
               </div>
               <div v-else>
                 <div class="col-12 align-self-end">
-                  <div v-if="income.state === 'income'" class="col-12 align-self-end">
-                    <button class="btn btn-success w-100 text-truncate rounded-btn" disabled>Income</button>
+                  <div v-if="income.state === 'income'" class="d-flex col-12 align-self-end">
+                    <button class="btn btn-success col-9 text-truncate rounded-btn" disabled>Income</button>
+                    <button class="btn btn-danger w-100 text-truncate rounded-btn ms-2 p-1" disabled>
+                      <span class="material-symbols-sharp delete-icon">
+                        delete
+                      </span>
+                    </button>
                   </div>
                   <div v-else-if="income.state === 'progress'" class="col-12 align-self-end">
                     <button class="btn btn-dark w-100 text-truncate rounded-btn" disabled>Progress...</button>
@@ -210,5 +215,13 @@ const moveToNewItem = (address) => {
   color: var(--white-font);
   font-size: 1rem;
   font-weight: 700;
+}
+
+.delete-icon {
+  position: absolute;
+  transform: translateX(-50%) translateY(-48%);
+
+  font-size: 1.3rem;
+  color: var(--white-font);
 }
 </style>
