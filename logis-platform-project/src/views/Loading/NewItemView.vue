@@ -113,9 +113,18 @@ const createNewItem = async () => {
                 </div>
               </div>
 
-              <div class="card-body d-flex justify-content-center align-items-center">
-                <input id="product-image" type="file" class="form-control-file"
-                       accept="image/*" @change="previewImage"/>
+              <div class="card-body d-flex justify-content-center align-items-center file-box">
+                <label for="product-image">
+                  <span v-if="(!route.query.space || !route.query.address)" class="btn btn-dark rounded-btn file-btn">
+                    Please set the location first
+                  </span>
+                  <span v-else class="btn btn-light rounded-btn file-btn">Select Picture</span>
+                </label>
+                <div v-if="(!route.query.space || !route.query.address)"></div>
+                <div v-else-if="newImage" class="file-name ms-3">{{ newImage?.name }}</div>
+                <div v-else class="file-name ms-3">No Picture</div>
+                <input id="product-image" type="file" class="form-control-file file-upload" name="product-image"
+                       accept="image/*" @change="previewImage" :disabled="(!route.query.space || !route.query.address)"/>
               </div>
             </div>
           </div>
@@ -213,6 +222,20 @@ const createNewItem = async () => {
   color: var(--white-font);
   font-size: 1.2rem;
   font-weight: 600;
+}
+
+.file-box {
+  background-color: var(--black-finaly-background);
+  border-radius: 20px;
+}
+
+.file-name {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.file-upload {
+  display: none;
 }
 
 .item-card-box {
