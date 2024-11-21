@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import('@/views/Loading/StorageView.vue')
     },
     {
+      path: '/loading/workspace',
+      name: 'workspace',
+      component: () => import('@/views/Loading/WorkspaceView.vue')
+    },
+    {
       path: '/loading/waitlist',
       name: 'waitlist',
       component: () => import('@/views/Loading/WaitListView.vue')

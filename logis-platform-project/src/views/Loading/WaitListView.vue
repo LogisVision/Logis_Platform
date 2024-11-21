@@ -101,6 +101,7 @@ const deleteItem = async (item_data) => {
                        @load="imageLoad = true">
                 </div>
 
+                <!-- Item Info -->
                 <div class="ms-3 me-3 wait-item-info-box">
                   <!-- Item ID -->
                   <div v-if="income.item" class="wait-item-id text-truncate">
@@ -119,6 +120,8 @@ const deleteItem = async (item_data) => {
                   <div v-else class="mt-2 text-center wait-item-color-info text-truncate">None</div>
                 </div>
               </div>
+
+              <!-- 상태 표시 및 버튼 부분 -->
               <div v-if="route.query.option === 'select'">
                 <div v-if="income.state === 'income'" class="col-12 align-self-end">
                   <button class="btn btn-success w-100 text-truncate rounded-btn"

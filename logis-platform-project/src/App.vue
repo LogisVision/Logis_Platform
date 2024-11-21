@@ -29,23 +29,34 @@ const router = useRouter();
         </li>
         <li class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'storage' }"
-                      :class="{ 'side-button-active': (route.name === 'storage' || route.name === 'waitlist' || route.name === 'new-item')  }">
+                      :class="{ 'side-button-active': (route.name === 'storage' || route.name === 'waitlist'
+                      || route.name === 'new-item' || route.name === 'workspace')  }">
             Loading
           </RouterLink>
         </li>
-        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'new-item'" class="side-second-button-cover">
+        <li v-if="route.name === 'storage' || route.name === 'waitlist'
+        || route.name === 'new-item' || route.name === 'workspace'" class="side-second-button-cover">
           <RouterLink class="side-second-button text-truncate" :to="{ name: 'storage' }"
                       :class="{ 'side-second-button-active': route.name === 'storage' }">
             Storage
           </RouterLink>
         </li>
-        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'new-item'" class="side-second-button-cover">
+        <li v-if="route.name === 'storage' || route.name === 'waitlist'
+        || route.name === 'new-item' || route.name === 'workspace'" class="side-second-button-cover">
+          <RouterLink class="side-second-button text-truncate" :to="{ name: 'workspace' }"
+                      :class="{ 'side-second-button-active': route.name === 'workspace' }">
+            Work Space
+          </RouterLink>
+        </li>
+        <li v-if="route.name === 'storage' || route.name === 'waitlist'
+         || route.name === 'new-item' || route.name === 'workspace'" class="side-second-button-cover">
           <RouterLink class="side-second-button text-truncate" :to="{ name: 'waitlist' }"
                       :class="{ 'side-second-button-active': route.name === 'waitlist' }">
             Wait List
           </RouterLink>
         </li>
-        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'new-item'" class="side-second-button-cover">
+        <li v-if="route.name === 'storage' || route.name === 'waitlist' || route.name === 'new-item'
+         || route.name === 'workspace'" class="side-second-button-cover">
           <RouterLink class="side-second-button text-truncate" :to="{ name: 'new-item' }"
                       :class="{ 'side-second-button-active': route.name === 'new-item' }">
             New Item

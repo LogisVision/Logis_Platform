@@ -401,6 +401,13 @@ const API = {
                     console.error("[Error] 이미 수행 중인 명령어 입니다. 삭제할 수 없습니다.");
                     return 403;
                 }
+                else if (command.state === "completed") {
+                    // 명령어 삭제
+                    await deleteDoc(doc(database, "commands", command.id));
+
+                    console.log("[System] 명령어를 성공적으로 삭제하였습니다.");
+                    return 200;
+                }
                 else {
                     // 시작 지점 점유 상태 되돌리기
                     if (command.item.location.space === "incomings") {
