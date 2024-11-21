@@ -123,7 +123,7 @@ const router = useRouter();
   width: 80%;
   height: auto;
 
-  margin: 30px 0 20px 15px;
+  margin: 30px 0 20px 20px;
 
   object-fit: contain;
   align-self: flex-start;

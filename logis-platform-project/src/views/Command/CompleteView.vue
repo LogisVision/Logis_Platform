@@ -186,6 +186,7 @@ const deleteCommand = async (command) => {
 }
 
 .item-box {
+  width: 16vw;
   height: auto;
 
   background-color: var(--black-finaly-background);

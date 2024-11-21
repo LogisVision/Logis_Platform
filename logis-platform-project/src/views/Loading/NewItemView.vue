@@ -16,6 +16,7 @@ const newColorHex = ref('#000000');
 const newColor = ref({ red: 0, green: 0, blue: 0});
 const newImage = ref(null);
 const newImageURL = ref('');
+const uploading = ref(false);
 
 // 이미지 자르기 변수
 const cropper = ref(null);
@@ -72,6 +73,7 @@ const changeColor = () => {
 
 // 아이템을 새롭게 만들어서 추가하는 Handler
 const createNewItem = async () => {
+  uploading.value = true;
   const newLocation = { space: route.query.space, address: route.query.address, };
   const result = await LOGIS_API.item.add(newColor.value, newLocation, croppedImage.value);
   console.log(result);
@@ -114,15 +116,25 @@ const createNewItem = async () => {
               </div>
 
               <div class="card-body d-flex justify-content-center align-items-center file-box">
-                <label for="product-image">
+                <!-- 파일 추가 버튼 및 안내문 영역 -->
+                <label v-if="!newImage" for="product-image">
                   <span v-if="(!route.query.space || !route.query.address)" class="btn btn-dark rounded-btn file-btn">
                     Please set the location first
                   </span>
                   <span v-else class="btn btn-light rounded-btn file-btn">Select Picture</span>
                 </label>
+
+                <!-- 파일 삭제 버튼 -->
+                <button v-if="route.query.space && route.query.address && newImage" class="btn btn-danger rounded-btn file-btn" @click="() => { router.go(0) }">
+                  Remove
+                </button>
+
+                <!-- 파일 이름 -->
                 <div v-if="(!route.query.space || !route.query.address)"></div>
                 <div v-else-if="newImage" class="file-name ms-3">{{ newImage?.name }}</div>
                 <div v-else class="file-name ms-3">No Picture</div>
+
+                <!-- 실제 Input -->
                 <input id="product-image" type="file" class="form-control-file file-upload" name="product-image"
                        accept="image/*" @change="previewImage" :disabled="(!route.query.space || !route.query.address)"/>
               </div>
@@ -157,7 +169,7 @@ const createNewItem = async () => {
                 <div class="row mt-3 justify-content-center">
                   <div class="col-12 align-self-end">
                     <button class="btn btn-success w-100 text-truncate rounded-btn"
-                            :disabled="(!route.query.space || !route.query.address || !croppedImage)"
+                            :disabled="(!route.query.space || !route.query.address || !croppedImage || uploading)"
                             @click="createNewItem">
                       Create
                     </button>
@@ -169,7 +181,13 @@ const createNewItem = async () => {
         </div>
       </div>
 
-
+      <div v-if="uploading" class="wrapper-box"></div>
+      <div v-if="uploading" class="floating-loading-box">
+        <img class="img-fluid" src="@/assets/images/loadingImage.gif" alt="Loading" style="scale: 1.5">
+        <div class="loading-text">
+          Creating new item
+        </div>
+      </div>
 
     </main>
     <footer class="footer-layout">

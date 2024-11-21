@@ -127,8 +127,12 @@ const createCommand = async () => {
           </button>
         </div>
 
-        <div v-if="pendingCommand" class="loading-box">
-          <img src="@/assets/images/loadingImage.gif" alt="Loading">
+        <div v-if="pendingCommand" class="wrapper-box"></div>
+        <div v-if="pendingCommand" class="floating-loading-box">
+          <img class="img-fluid" src="@/assets/images/loadingImage.gif" alt="Loading" style="scale: 1.5">
+          <div class="loading-text">
+            Creating new command
+          </div>
         </div>
       </div>
     </main>
