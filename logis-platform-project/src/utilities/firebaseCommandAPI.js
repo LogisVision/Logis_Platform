@@ -316,6 +316,7 @@ const API = {
         },
 
         // 명령어를 완료 처리하는 기능 (command: map[id, ...])
+        // (**위치 정보에 반영하는 기능 포함됨**)
         complete: async (command) => {
             if (command.state === "lock") {
                 console.error("[Error] 잠긴 명령어를 완료할 수 없습니다!!!");
@@ -392,6 +393,7 @@ const API = {
         },
 
         // 명령어를 삭제하는 기능 (command: map[id, ...])
+        // (**위치 정보에 반영하는 기능 포함됨**)
         delete: async (command) => {
             try {
                 // 삭제하려는 명령어가 선행 명령어 종료를 위해 잠겨있거나, 명령어가 수행중인 경우 삭제할 수 없음
@@ -400,6 +402,43 @@ const API = {
                     return 403;
                 }
                 else {
+                    // 시작 지점 점유 상태 되돌리기
+                    if (command.item.location.space === "incomings") {
+                        await LOGIS_API.incoming.updateState(command.item.location.address, "empty");
+                    }
+                    else if (command.item.location.space === "storages") {
+                        await LOGIS_API.storage.updateState(command.item.location.address, "empty");
+                    }
+                    else if (command.item.location.space === "workspaces") {
+                        await LOGIS_API.workspace.updateState(command.item.location.address, "empty");
+                    }
+
+                    // 도착 지점 점유 상태 되돌리기
+                    if (command.destination.space === "incomings") {
+                        await LOGIS_API.incoming.updateState(command.destination.address, "empty");
+                    }
+                    else if (command.destination.space === "storages") {
+                        await LOGIS_API.storage.updateState(command.destination.address, "empty");
+                    }
+                    else if (command.destination.space === "workspaces") {
+                        await LOGIS_API.workspace.updateState(command.destination.address, "empty");
+                    }
+
+                    // 아이템 정보 불러오기
+                    const item_data = await LOGIS_API.item.getOne(command.item.id);
+
+                    // 아이템의 상태 되돌리기
+                    if (item_data.location_data.space === "incomings") {
+                        await LOGIS_API.item.update(item_data, item_data.location_data, "income");
+                    }
+                    else if (item_data.location_data.space === "storages") {
+                        await LOGIS_API.item.update(item_data, item_data.location_data, "stored");
+                    }
+                    else if (item_data.location_data.space === "workspaces") {
+                        await LOGIS_API.item.update(item_data, item_data.location_data, "full");
+                    }
+
+                    // 명령어 삭제
                     await deleteDoc(doc(database, "commands", command.id));
 
                     console.log("[System] 명령어를 성공적으로 삭제하였습니다.");
