@@ -70,7 +70,7 @@ const deleteItem = async (address, item) => {
                 <div class="col mb-2 d-flex flex-column justify-content-center align-items-center">
                   <img src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid storage-item-image"
-                       :style="{opacity: (imageLoad && storage.item) ? 0.3 : 1}"
+                       :style="{opacity: 0}"
                   >
 
                   <img src="@/assets/images/empty.png" alt="Empty"
@@ -176,13 +176,13 @@ const deleteItem = async (address, item) => {
 .storage-item-image-background {
   position: absolute;
   z-index: 0;
-  scale: 0.9;
+  scale: 95%;
 }
 
 .storage-item-image-foreground {
   position: absolute;
   z-index: 1;
-  scale: 0.9;
+  scale: 95%;
 }
 
 .storage-state {

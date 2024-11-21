@@ -39,7 +39,7 @@ const getCroppedImage = async () => {
 
     canvas.toBlob((blob) => {
       console.log(newImage.value);
-      const fileName = newImage.value.name;
+      const fileName = newImage.value.name.split('.')[0] + '.png';
       croppedImage.value = new File([blob], fileName,
           { type: blob.type, lastModified: Date.now() });
       console.log(croppedImage.value);

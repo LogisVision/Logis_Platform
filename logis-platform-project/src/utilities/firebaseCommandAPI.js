@@ -56,7 +56,16 @@ const API = {
                         else {
                             // 선행 명령어를 찾지 못한 경우
                             console.error("[Error] 선행 명령어를 찾을 수 없습니다.");
-                            return 404;
+                            return {
+                                id: command.id,
+                                datetime: command.datetime,
+                                datetime_data: command.datetime.toDate(),
+                                destination: command.destination,
+                                item: command.item,
+                                robot: command.robot,
+                                forward: command.forward,
+                                state: "ghost",
+                            }
                         }
                     }
                     else {
@@ -103,7 +112,7 @@ const API = {
 
                 // 해당 로봇에게 주어진 명령어만 추출하기
                 let targetCommands = requestedCommands.filter(command => command.robot === id);
-                targetCommands = targetCommands.filter(command => command.state === "target");
+                targetCommands = targetCommands.filter(command => command.state === "request");
 
                 if (targetCommands.length > 0) {
                     targetCommands.sort((first, second) => second.datetime - first.datetime);
@@ -135,7 +144,7 @@ const API = {
             }
         },
 
-        // 새로운 명령어를 생성하는 기능 (item: map[id, ...], destination: map[space, address]
+        // 새로운 명령어를 생성하는 기능 (item: map[id, ...], destination: map[space, address])
         request: async (item, destination) => {
             try {
                 // 점유 가능한 작업 공간 확인하기

@@ -63,6 +63,13 @@ const moveToNewItem = (address) => {
     },
   });
 };
+
+// 입고 라인에 있는 아이템을 삭제하는 handler
+const deleteItem = async (item_data) => {
+  const result = await LOGIS_API.item.delete(item_data);
+  console.log(result);
+  router.go(0);
+}
 </script>
 
 <template>
@@ -84,7 +91,7 @@ const moveToNewItem = (address) => {
                 <div class="d-flex flex-column justify-content-center align-items-center">
                   <img src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid wait-item-image"
-                       :style="{opacity: (imageLoad && income.item) ? 0.3 : 1}">
+                       :style="{opacity: 0}">
 
                   <img src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid wait-item-image wait-item-image-background"
@@ -146,7 +153,7 @@ const moveToNewItem = (address) => {
                 <div class="col-12 align-self-end">
                   <div v-if="income.state === 'income'" class="d-flex col-12 align-self-end">
                     <button class="btn btn-success col-9 text-truncate rounded-btn" disabled>Income</button>
-                    <button class="btn btn-danger w-100 text-truncate rounded-btn ms-2 p-1" disabled>
+                    <button class="btn btn-danger w-100 text-truncate rounded-btn ms-2 p-1" @click="() => { deleteItem(income.item_data) }">
                       <span class="material-symbols-sharp delete-icon">
                         delete
                       </span>

@@ -127,9 +127,10 @@ const deleteCommand = async (command) => {
             </div>
           </div>
 
-          <!-- Delete Button -->
+          <!-- Option Button -->
           <div class="d-flex flex-column">
-            <button class="mb-2 btn rounded-btn btn-primary" :disabled="command.state === 'lock' || command.state === 'progress'"
+            <button class="mb-2 btn rounded-btn btn-primary"
+                    :disabled="command.state === 'lock' || command.state === 'progress' || command.state === 'ghost'"
                     @click="() => { forcedCompleteCommand(command) }">
               <span class="ps-2 pe-2 material-symbols-sharp done-icon">
                 published_with_changes

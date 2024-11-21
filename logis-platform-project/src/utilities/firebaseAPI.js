@@ -158,6 +158,7 @@ const API = {
         },
 
         // 새로운 아이템 추가하는 기능 (color: map[red, green, blue], newLocation: map[space, address], file: File)
+        // (**위치 정보에 반영하는 기능 포함됨**)
         add: async (color, newLocation, file) => {
             // 파일명 생성하기
             const timestamp = Date.now();
@@ -181,7 +182,7 @@ const API = {
                 await uploadBytes(ref(storage, `picture/${uploadFileName}`), file);
 
                 // 위치 정보에도 데이터 반영하기
-                await API.item.locationAdd(itemRef, newLocation, "income");
+                await API.location.add(itemRef, newLocation, "income");
 
                 console.log("[System] 새로운 아이템이 성공적으로 등록되었습니다.");
                 return 201;
@@ -193,6 +194,7 @@ const API = {
         },
 
         // 아이템의 정보(위치 및 상태)를 변경하는 기능 (item: map[id, ...], newLocation: map[space, address], newState: string)
+        // (**위치 정보에 반영하는 기능 포함됨**)
         update: async (item, newLocation, newState) => {
             // 변경된 위치 정보와 상태 정보 생성
             const locationRef = doc(database, newLocation.space, newLocation.address);
@@ -206,8 +208,8 @@ const API = {
                 const itemRef = doc(database, "items", item.id);
 
                 // 위치 정보에 반영하기
-                await API.item.locationDelete(item);
-                await API.item.locationAdd(itemRef, newLocation, newState);
+                await API.location.delete(item);
+                await API.location.add(itemRef, newLocation, newState);
 
                 await updateDoc(doc(database, "items", item.id), newItemData);
                 console.log("[System] 아이템 정보가 성공적으로 변경되었습니다.");
@@ -220,6 +222,7 @@ const API = {
         },
 
         // 아이템을 삭제하는 기능 (item: map[id, ...])
+        // (**위치 정보에 반영하는 기능 포함됨**)
         delete: async (item) => {
             try {
                 console.log(item);
@@ -232,7 +235,7 @@ const API = {
                 await deleteDoc(doc(database, "items", item.id));
 
                 // 위치 정보에도 데이터 반영하기
-                await API.item.locationDelete(item);
+                await API.location.delete(item);
 
                 console.log("[System] 아이템 정보를 성공적으로 삭제하였습니다.");
                 return 200;
@@ -242,33 +245,12 @@ const API = {
                 return error.code;
             }
         },
+    },
 
-        // 위치정보에서 아이템 정보를 삭제하는 기능 (item: map[id, ...])
-        locationDelete: async (item) => {
-            try {
-                if (item.location_data.space === "incomings") {
-                    await API.incoming.removeItem(item.location_data.address);
-                    await API.incoming.updateState(item.location_data.address, "empty");
-                }
-                else if (item.location_data.space === "workspaces") {
-                    await API.workspace.removeItem(item.location_data.address);
-                    await API.workspace.updateState(item.location_data.address, "empty");
-                }
-                else if (item.location_data.space === "storages") {
-                    await API.storage.removeItem(item.location_data.address);
-                }
-
-                console.log("[System] 해당 위치 정보에서 아이템을 성공적으로 제거하였습니다.");
-                return 200;
-            }
-            catch (error) {
-                console.error("[Error] 해당 위치 정보에서 아이템을 제거하는데 실패하였습니다.");
-                return error.code;
-            }
-        },
-
+    // 위치 정보 관련 API
+    location: {
         // 위치정보에서 아이템 정보를 추가하는 기능 (itemRef: itemRef, newLocation: map[space, address], state: string)
-        locationAdd: async (itemRef, newLocation, state) => {
+        add: async (itemRef, newLocation, state) => {
             try {
                 if (newLocation.space === "incomings") {
                     await API.incoming.addItem(newLocation.address, itemRef);
@@ -290,7 +272,31 @@ const API = {
                 console.error("[Error] 해당 위치정보에 아이템을 추가하는데 실패하였습니다.");
                 return error.code;
             }
-        }
+        },
+
+        // 위치정보에서 아이템 정보를 삭제하는 기능 (item: map[id, ...])
+        delete: async (item) => {
+            try {
+                if (item.location_data.space === "incomings") {
+                    await API.incoming.removeItem(item.location_data.address);
+                    await API.incoming.updateState(item.location_data.address, "empty");
+                }
+                else if (item.location_data.space === "workspaces") {
+                    await API.workspace.removeItem(item.location_data.address);
+                    await API.workspace.updateState(item.location_data.address, "empty");
+                }
+                else if (item.location_data.space === "storages") {
+                    await API.storage.removeItem(item.location_data.address);
+                }
+
+                console.log("[System] 해당 위치 정보에서 아이템을 성공적으로 제거하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 해당 위치 정보에서 아이템을 제거하는데 실패하였습니다.");
+                return error.code;
+            }
+        },
     },
 
     // 입고라인 관련 API
@@ -392,11 +398,11 @@ const API = {
             }
         },
 
-        // 입고라인에 아이템을을 추가하는 기능 (**state 변경은 포함 안됨**)
-        addItem: async (id, item) => {
+        // 입고라인에 아이템을을 추가하는 기능 (id: string, itemRef: itemRef) (**state 변경은 포함 안됨**)
+        addItem: async (id, itemRef) => {
             // 변경된 상태 정보 생성
             const newIncomingData = {
-                item: item,
+                item: itemRef,
             };
 
             // 변경 정보 업로드 하기
@@ -411,7 +417,7 @@ const API = {
             }
         },
 
-        // 입고라인의 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        // 입고라인의 아이템을 제거하는 기능 (id: string) (**state 변경은 포함 안됨**)
         removeItem: async (id) => {
             // 삭제 명령어가 포함된 정보 생성
             const removeItemData = {
@@ -433,7 +439,7 @@ const API = {
 
     // 작업공간 관련 API
     workspace: {
-        // 하나의 작업공간 데이터를 얻는 기능
+        // 하나의 작업공간 데이터를 얻는 기능 (id: string)
         getOne: async (id) => {
             try {
                 const docSnapshot = await getDoc(doc(database, "workspaces", id));
@@ -530,11 +536,11 @@ const API = {
             }
         },
 
-        // 작업공간에 아이템을 추가하는 기능 (**state 변경은 포함 안됨**)
-        addItem: async (id, item) => {
+        // 작업공간에 아이템을 추가하는 기능 (id: string, itemRef: itemRef) (**state 변경은 포함 안됨**)
+        addItem: async (id, itemRef) => {
             // 변경된 상태 정보 생성
             const newWorkspaceData = {
-                item: item,
+                item: itemRef,
             };
 
             // 변경 정보 업로드 하기
@@ -549,7 +555,7 @@ const API = {
             }
         },
 
-        // 작업공간에 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        // 작업공간에 아이템을 제거하는 기능 (id: string) (**state 변경은 포함 안됨**)
         removeItem: async (id) => {
             // 삭제 명령어가 포함된 정보 생성
             const removeItemData = {
@@ -571,7 +577,7 @@ const API = {
 
     // 저장공간 관련 API
     storage: {
-        // 하나의 저장공간 데이터를 얻는 기능
+        // 하나의 저장공간 데이터를 얻는 기능 (id: string)
         getOne: async (id) => {
             try {
                 const docSnapshot = await getDoc(doc(database, "storages", id));
@@ -670,11 +676,11 @@ const API = {
             }
         },
 
-        // 저장공간에 아이템을 추가하는 기능 (**state 변경은 포함 안됨**)
-        addItem: async (id, item) => {
+        // 저장공간에 아이템을 추가하는 기능 (id: string, itemRef: itemRef) (**state 변경은 포함 안됨**)
+        addItem: async (id, itemRef) => {
             // 변경된 상태 정보 생성
             const newStorageData = {
-                item: item,
+                item: itemRef,
             };
 
             // 변경 정보 업로드 하기
@@ -689,7 +695,7 @@ const API = {
             }
         },
 
-        // 저장공간에 아이템을 제거하는 기능 (**state 변경은 포함 안됨**)
+        // 저장공간에 아이템을 제거하는 기능 (id: string) (**state 변경은 포함 안됨**)
         removeItem: async (id) => {
             // 삭제 명령어가 포함된 정보 생성
             const removeItemData = {
@@ -711,7 +717,7 @@ const API = {
 
     // AGV 로봇 관련 API
     robot: {
-        // 하나의 AGV 상태 데이터를 얻는 기능
+        // 하나의 AGV 상태 데이터를 얻는 기능 (id: string)
         getOne: async (id) => {
             try {
                 const docSnapshot = await getDoc(doc(database, "robots", id));
