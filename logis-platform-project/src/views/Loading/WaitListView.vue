@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
+import {onUnmounted, ref} from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
 // 라우터 초기화
@@ -40,7 +40,10 @@ const getIncomes = async () => {
 
 changeTitle();
 getIncomes();
-setInterval(getIncomes, 1000);
+const intervalId = setInterval(getIncomes, 1000);
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 
 // 새로운 명령어 만드는 링크로 이동하는 handler
 const moveToNewCommand = (item_id, address) => {

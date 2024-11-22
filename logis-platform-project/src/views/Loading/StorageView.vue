@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
+import {onUnmounted, ref} from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
 // 라우터 초기화
@@ -24,7 +24,10 @@ const getStorages = async () => {
 }
 
 getStorages();
-setInterval(getStorages, 1000);
+const intervalId = setInterval(getStorages, 1000);
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 
 // 선택 화면 이동 Handler
 const moveToSelectView = (storage_id) => {

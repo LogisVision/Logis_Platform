@@ -1,4 +1,5 @@
 <script setup>
+import { onUnmounted } from 'vue';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
@@ -23,7 +24,10 @@ const getCompletedCommands = async () => {
 }
 
 getCompletedCommands();
-setInterval(getCompletedCommands, 1000);
+const intervalId = setInterval(getCompletedCommands, 1000);
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {

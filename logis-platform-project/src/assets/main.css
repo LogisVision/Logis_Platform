@@ -52,6 +52,7 @@ option {
     /* button colors */
     --black-button-basic: #101010;
     --black-button-hover: #232323;
+    --black-button-hover-over: #373737;
     --black-button-active: #0362bc;
     --black-button-active-hover: #0b467e;
     --black-secondary-button-active: #787878;

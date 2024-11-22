@@ -2,7 +2,7 @@
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
+import {onUnmounted, ref} from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js'
 import { Color } from "@/utilities/colorModule.js";
 
@@ -20,7 +20,10 @@ const getDevices = async () => {
 }
 
 getDevices();
-setInterval(getDevices, 1000);
+const intervalId = setInterval(getDevices, 1000);
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 
 // 상태에 따라 이미지 변환하기
 const stateImage = (state) => {
@@ -339,12 +342,6 @@ const stateColor = (state) => {
 
   font-size: 0.7rem;
   font-weight: 400;
-}
-
-.delete-icon {
-  margin: 3px 0 0 -1px;
-  font-size: 1.2rem;
-  color: var(--white-font);
 }
 
 .device-state {

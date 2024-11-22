@@ -2,7 +2,7 @@
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
+import {onUnmounted, ref} from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
 // 새로운 변수
@@ -20,7 +20,10 @@ const getWorks = async () => {
 }
 
 getWorks();
-setInterval(getWorks, 1000);
+const intervalId = setInterval(getWorks, 1000);
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 
 // 작업라인에 있는 아이템을 삭제하는 handler
 const deleteItem = async (item_data) => {

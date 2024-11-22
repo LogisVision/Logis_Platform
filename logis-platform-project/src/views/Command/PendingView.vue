@@ -2,7 +2,7 @@
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
+import {onUnmounted, ref} from 'vue';
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
 
@@ -23,7 +23,10 @@ const getPendingCommands = async () => {
 }
 
 getPendingCommands();
-setInterval(getPendingCommands, 1000);
+const intervalId = setInterval(getPendingCommands, 1000);
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 
 // 명령어를 강제로 완료시키는 Handler
 const forcedCompleteCommand = async (command) => {

@@ -19,8 +19,6 @@ import {
 
 import {deleteObject, getDownloadURL, getStorage, ref, uploadBytes,} from "firebase/storage";
 
-import {getAuth,} from "firebase/auth";
-
 import { firebaseConfig } from "@/security/firebaseKey.js";
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
@@ -30,7 +28,6 @@ import { Color } from "@/utilities/colorModule.js";
 const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);
 const storage = getStorage(fireApp);
-const auth = getAuth(fireApp);
 
 
 // Logis Vision의 Firebase Command 이외의 제어 부분

@@ -8,8 +8,6 @@ import {initializeApp} from "firebase/app";
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, serverTimestamp, updateDoc, }
     from "firebase/firestore";
 
-import { getAuth, } from "firebase/auth";
-
 import { firebaseConfig } from "@/security/firebaseKey.js";
 import { LOGIS_API } from "@/utilities/firebaseAPI.js";
 
@@ -17,7 +15,6 @@ import { LOGIS_API } from "@/utilities/firebaseAPI.js";
 // Firebase 초기화
 const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);
-const auth = getAuth(fireApp);
 
 // Logis Vision의 Firebase Command 제어 부분
 const API = {

@@ -44,13 +44,11 @@ const Color = {
     // 이미지에서 대표 색상을 결정하는 함수 (imageSrc: URL)
     getPrimaryColor: async (imageSrc) => {
         const palette = await Vibrant.from(imageSrc).getPalette();
-        const color = {
+        return {
             red: Math.floor(palette.Vibrant.r),
             green: Math.floor(palette.Vibrant.g),
             blue: Math.floor(palette.Vibrant.b),
         };
-
-        return color;
     }
 }
 
