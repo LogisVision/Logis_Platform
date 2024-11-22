@@ -51,25 +51,22 @@ const deleteCommand = async (command) => {
         <div v-for="command in completedCommands" :key="command.id"
              class="d-flex justify-content-center align-items-center overflow-auto no-scrollbar pt-2 pb-2 command-box mb-3">
           <!-- Robot ID and State -->
-          <div class="ms-2 command-state-box">
-            <div class="d-flex justify-content-start align-items-center command-state-box">
-              <div class="d-flex justify-content-center align-items-center pt-4 pb-4 ps-4 pe-4 command-robot-id"
-                   :style="{ backgroundColor: command.robot === 'A' ? 'var(--main-left-color)' : 'var(--main-right-color)'}">
-                {{ command.robot }}
-              </div>
+          <div class="ms-2 d-flex justify-content-start align-items-center command-state-box">
+            <div class="d-flex justify-content-center align-items-center pt-4 pb-4 ps-4 pe-4 command-robot-id"
+                 :style="{ backgroundColor: command.robot === 'A' ? 'var(--main-left-color)' : 'var(--main-right-color)'}">
+              {{ command.robot }}
+            </div>
 
-              <div class="flex justify-content-center align-items-center command-state-text text-truncate ps-3 pe-3">
-                <div class="text-truncate command-state-id">
-                  {{ command.id }}
-                </div>
-                <div class="text-truncate command-state-time">
-                  {{ command.datetime_data.toLocaleString() }}
-                </div>
-                <div class="text-truncate mt-1">
-                  {{ command.state }}
-                </div>
+            <div class="flex justify-content-center align-items-center command-state-text text-truncate ps-3 pe-3">
+              <div class="text-truncate command-state-id">
+                {{ command.id }}
               </div>
-
+              <div class="text-truncate command-state-time">
+                {{ command.datetime_data.toLocaleString() }}
+              </div>
+              <div class="text-truncate mt-1">
+                {{ command.state }}
+              </div>
             </div>
           </div>
 
@@ -163,7 +160,7 @@ const deleteCommand = async (command) => {
 }
 
 .command-state-text {
-  width: 200px;
+  width: 15vw;
 
   font-size: 1.2rem;
   font-weight: 600;
