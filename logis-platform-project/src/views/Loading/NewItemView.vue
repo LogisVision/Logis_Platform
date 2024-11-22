@@ -153,9 +153,9 @@ const createNewItem = async () => {
                     <button class="btn btn-secondary mt-3 rounded-btn w-100" @click="getCroppedImage">Crop</button>
                   </div>
                   <img v-if="!croppedImage" src="@/assets/images/empty.png" alt="Empty"
-                       class="img-fluid item-image">
+                       class="img-fluid item-image" draggable="false">
                   <img v-else :src="croppedImageURL" alt="New Item Image"
-                       class="img-fluid item-image">
+                       class="img-fluid item-image" draggable="false">
                 </div>
 
                 <!-- Color Info -->
@@ -183,7 +183,7 @@ const createNewItem = async () => {
 
       <div v-if="uploading" class="wrapper-box"></div>
       <div v-if="uploading" class="floating-loading-box">
-        <img class="img-fluid" src="@/assets/images/loadingImage.gif" alt="Loading" style="scale: 1.5">
+        <img class="img-fluid loading-img" src="@/assets/images/loadingImage.gif" alt="Loading" draggable="false">
         <div class="loading-text">
           Creating new item
         </div>
@@ -311,4 +311,6 @@ const createNewItem = async () => {
   font-size: 1.3rem;
   font-weight: 600;
 }
+
+
 </style>

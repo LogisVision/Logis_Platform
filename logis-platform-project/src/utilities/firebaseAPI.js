@@ -33,7 +33,7 @@ const storage = getStorage(fireApp);
 const auth = getAuth(fireApp);
 
 
-// API 정의하는 부분
+// Logis Vision의 Firebase Command 이외의 제어 부분
 const API = {
     // 아이템 관련 API
     item: {

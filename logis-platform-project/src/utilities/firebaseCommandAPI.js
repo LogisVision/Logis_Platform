@@ -19,7 +19,7 @@ const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);
 const auth = getAuth(fireApp);
 
-// API 정의하는 부분
+// Logis Vision의 Firebase Command 제어 부분
 const API = {
     // AGV 로봇 명령어 관련 API
     command: {
@@ -409,17 +409,6 @@ const API = {
                     return 200;
                 }
                 else {
-                    // 시작 지점 점유 상태 되돌리기
-                    if (command.item.location.space === "incomings") {
-                        await LOGIS_API.incoming.updateState(command.item.location.address, "empty");
-                    }
-                    else if (command.item.location.space === "storages") {
-                        await LOGIS_API.storage.updateState(command.item.location.address, "empty");
-                    }
-                    else if (command.item.location.space === "workspaces") {
-                        await LOGIS_API.workspace.updateState(command.item.location.address, "empty");
-                    }
-
                     // 도착 지점 점유 상태 되돌리기
                     if (command.destination.space === "incomings") {
                         await LOGIS_API.incoming.updateState(command.destination.address, "empty");
@@ -434,15 +423,17 @@ const API = {
                     // 아이템 정보 불러오기
                     const item_data = await LOGIS_API.item.getOne(command.item.id);
 
-                    // 아이템의 상태 되돌리기
-                    if (item_data.location_data.space === "incomings") {
-                        await LOGIS_API.item.update(item_data, item_data.location_data, "income");
-                    }
-                    else if (item_data.location_data.space === "storages") {
-                        await LOGIS_API.item.update(item_data, item_data.location_data, "stored");
-                    }
-                    else if (item_data.location_data.space === "workspaces") {
-                        await LOGIS_API.item.update(item_data, item_data.location_data, "full");
+                    if (item_data.location_data.space === command.item.location.space) {
+                        // 아이템의 상태 되돌리기
+                        if (item_data.location_data.space === "incomings") {
+                            await LOGIS_API.item.update(item_data, item_data.location_data, "income");
+                        }
+                        else if (item_data.location_data.space === "storages") {
+                            await LOGIS_API.item.update(item_data, item_data.location_data, "stored");
+                        }
+                        else if (item_data.location_data.space === "workspaces") {
+                            await LOGIS_API.item.update(item_data, item_data.location_data, "full");
+                        }
                     }
 
                     // 명령어 삭제

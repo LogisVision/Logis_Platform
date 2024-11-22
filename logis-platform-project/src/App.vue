@@ -11,7 +11,7 @@ const router = useRouter();
     <div class="platform-side">
       <!-- Main Logo -->
       <div>
-        <img src="./assets/logos/Black_Theme@3x.png" class="main-logo" alt="Logis Vision Logo"/>
+        <img src="./assets/logos/Black_Theme@3x.png" class="main-logo" alt="Logis Vision Logo"  draggable="false"/>
       </div>
       <!-- Side Buttons -->
       <ul class="side-button-list">

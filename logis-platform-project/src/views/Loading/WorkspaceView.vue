@@ -53,14 +53,14 @@ const deleteItem = async (item_data) => {
                 <div class="d-flex flex-column justify-content-center align-items-center">
                   <img src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid workspace-item-image"
-                       :style="{opacity: 0}">
+                       :style="{opacity: 0}" draggable="false">
 
                   <img src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid workspace-item-image workspace-item-image-background"
-                       :style="{opacity: (imageLoad && work.item) ? 0.3 : 1}">
+                       :style="{opacity: (imageLoad && work.item) ? 0.3 : 1}" draggable="false">
                   <img v-if="work.item" :src="(work.item_data?.image_url)" alt="Item Image"
                        class="img-fluid workspace-item-image workspace-item-image-foreground"
-                       @load="imageLoad = true">
+                       @load="imageLoad = true" draggable="false">
                 </div>
 
                 <!-- Item Info -->
@@ -106,7 +106,7 @@ const deleteItem = async (item_data) => {
             </div>
           </div>
           <div v-if="!loadAll" class="loading-box">
-            <img src="@/assets/images/loadingImage.gif" alt="Loading">
+            <img src="@/assets/images/loadingImage.gif" alt="Loading" draggable="false">
           </div>
         </div>
       </div>

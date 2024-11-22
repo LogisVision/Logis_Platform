@@ -71,9 +71,9 @@ const createCommand = async () => {
                   <!-- Item Image -->
                   <div class="d-flex flex-column justify-content-center align-items-center">
                     <img v-if="item" :src="(item.image_url)" alt="Item Image" @load="imageLoad = true"
-                         class="img-fluid item-image">
+                         class="img-fluid item-image" draggable="false">
                     <img v-if="!imageLoad" src="@/assets/images/empty.png" alt="Empty"
-                         class="img-fluid item-image">
+                         class="img-fluid item-image" draggable="false">
                   </div>
 
                   <div class="ms-3 me-3 item-info-box">
@@ -129,7 +129,7 @@ const createCommand = async () => {
 
         <div v-if="pendingCommand" class="wrapper-box"></div>
         <div v-if="pendingCommand" class="floating-loading-box">
-          <img class="img-fluid" src="@/assets/images/loadingImage.gif" alt="Loading" style="scale: 1.5">
+          <img class="img-fluid loading-img" src="@/assets/images/loadingImage.gif" alt="Loading" draggable="false">
           <div class="loading-text">
             Creating new command
           </div>

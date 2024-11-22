@@ -5,7 +5,7 @@
 // 필요한 Vibrant 라이브러리 불러오기
 import * as Vibrant from "node-vibrant";
 
-// API 정의하는 부분
+// Logis Vision의 Color 관련 API
 const Color = {
     // 색상의 밝기를 계산하는 함수 (color: map[red, green, blue])
     getBrightness: (color) => {

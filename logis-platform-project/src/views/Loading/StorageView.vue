@@ -10,10 +10,12 @@ import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 const route = useRoute();
 const router = useRouter();
 
-// 저장 공간 데이터 받아오기
-const storages = ref([]);
+// 새로운 변수
 const loadAll = ref(false);
 const imageLoad = ref(false);
+
+// 저장 공간 데이터 받아오기
+const storages = ref([]);
 
 const getStorages = async () => {
   const result = await LOGIS_API.storage.getAll();
@@ -57,7 +59,7 @@ const deleteItem = async (address, item) => {
             <div class="card storage-card-box">
               <div class="card-body">
                 <!-- Card Header -->
-                <div class="storage-card-content pb-2">
+                <div class="storage-card-head pb-2">
                   <div v-if="storage.item" class="storage-item-id text-truncate">
                     {{ storage.item_data?.id }}
                   </div>
@@ -69,16 +71,15 @@ const deleteItem = async (address, item) => {
                 <!-- Item Image -->
                 <div class="col mb-2 d-flex flex-column justify-content-center align-items-center">
                   <img src="@/assets/images/empty.png" alt="Empty"
-                       class="img-fluid storage-item-image"
-                       :style="{opacity: 0}"
-                  >
+                       class="img-fluid storage-item-image" draggable="false"
+                       :style="{opacity: 0}">
 
                   <img src="@/assets/images/empty.png" alt="Empty"
                        class="img-fluid storage-item-image storage-item-image-background"
-                       :style="{opacity: (imageLoad && storage.item) ? 0.3 : 1}">
+                       :style="{opacity: (imageLoad && storage.item) ? 0.3 : 1}" draggable="false">
                   <img v-if="storage.item" :src="storage.item_data?.image_url"
                        alt="Item Image" class="img-fluid storage-item-image storage-item-image-foreground"
-                       @load="imageLoad = true">
+                       @load="imageLoad = true" draggable="false">
                 </div>
 
                 <!-- Color Info -->
@@ -128,7 +129,7 @@ const deleteItem = async (address, item) => {
             </div>
           </div>
           <div v-if="!loadAll" class="loading-box">
-            <img src="@/assets/images/loadingImage.gif" alt="Loading">
+            <img src="@/assets/images/loadingImage.gif" alt="Loading" draggable="false">
           </div>
         </div>
       </div>
@@ -146,7 +147,7 @@ const deleteItem = async (address, item) => {
   border-radius: 20px;
 }
 
-.storage-card-content {
+.storage-card-head {
   width: 100%;
 
   display: flex;
