@@ -14,7 +14,7 @@ const works = ref([]);
 
 const getWorks = async () => {
   const result = await LOGIS_API.workspace.getAll();
-  console.log(result);
+  // console.log(result);
   works.value = result;
   loadAll.value = true;
 }

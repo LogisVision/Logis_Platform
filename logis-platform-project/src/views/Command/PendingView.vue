@@ -17,7 +17,7 @@ const getPendingCommands = async () => {
   if (result.length > 0) {
     result.sort((first, second) => first.datetime - second.datetime);
   }
-  console.log(result);
+  // console.log(result);
   pendingCommands.value = result;
   loadAll.value = true;
 }
@@ -40,7 +40,7 @@ const forcedCompleteCommand = async (command) => {
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {
   const result = await COMMAND_API.command.delete(command);
-  console.log(result);
+  // console.log(result);
 }
 </script>
 

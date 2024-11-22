@@ -18,7 +18,7 @@ const getCompletedCommands = async () => {
   if (result.length > 0) {
     result.sort((first, second) => second.datetime - first.datetime);
   }
-  console.log(result);
+  // console.log(result);
   completedCommands.value = result;
   loadAll.value = true;
 }
@@ -32,7 +32,7 @@ onUnmounted(() => {
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {
   const result = await COMMAND_API.command.delete(command);
-  console.log(result);
+  // console.log(result);
 }
 </script>
 

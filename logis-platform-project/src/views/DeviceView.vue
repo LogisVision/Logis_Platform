@@ -14,7 +14,7 @@ const devices = ref([]);
 
 const getDevices = async () => {
   const response = await LOGIS_API.robot.getAll();
-  console.log(response);
+  // console.log(response);
   devices.value = response;
   loadAll.value = true;
 }

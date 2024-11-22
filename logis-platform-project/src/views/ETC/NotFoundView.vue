@@ -16,7 +16,6 @@ import headerBox from '@/components/heaaderBox.vue';
         <div class="not-found-code">404</div>
         <div class="not-found-message">End of Road!</div>
       </div>
-
     </main>
     <footer class="footer-layout">
       <copyright-box />
