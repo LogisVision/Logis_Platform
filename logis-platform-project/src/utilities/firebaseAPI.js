@@ -21,9 +21,9 @@ import {deleteObject, getDownloadURL, getStorage, ref, uploadBytes,} from "fireb
 
 import {getAuth,} from "firebase/auth";
 
-import {firebaseConfig} from "@/security/firebaseKey.js";
-
-import {Color} from "@/utilities/colorModule.js";
+import { firebaseConfig } from "@/security/firebaseKey.js";
+import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
+import { Color } from "@/utilities/colorModule.js";
 
 
 // Firebase 초기화
@@ -717,41 +717,30 @@ const API = {
 
     // AGV 로봇 관련 API
     robot: {
-        // 하나의 AGV 상태 데이터를 얻는 기능 (id: string)
-        getOne: async (id) => {
-            try {
-                const docSnapshot = await getDoc(doc(database, "robots", id));
-
-                if (docSnapshot.exists()) {
-                    let robot = { id: docSnapshot.id, ...docSnapshot.data() };
-                    return {
-                        id: robot.id,
-                        state: robot.state,
-                        location: robot.location,
-                    }
-                }
-                else {
-                    console.error("[Error] 해당 AGV 데이터를 찾을 수 없습니다.");
-                    return 404;
-                }
-            }
-            catch (error) {
-                console.error("[Error] 알 수 없는 오류!!!");
-                return error.code;
-            }
-        },
-
         // 모든 AGV 상태 데이터를 얻는 기능
         getAll: async () => {
             try {
                 const querySnapshot = await getDocs(collection(database, "robots"));
-                return querySnapshot.docs.map((doc) => {
+                const robots = querySnapshot.docs.map((doc) => {
                     return {
                         id: doc.id,
                         state: doc.data().state,
                         location: doc.data().location,
                     };
+                })
+
+                // 수행해야할 명령어를 불러오기
+                const robotsPending = robots.map(async (robot) => {
+                    const command = await COMMAND_API.command.getTargetOne(robot.id);
+                    return {
+                        id: robot.id,
+                        state: robot.state,
+                        location: robot.location,
+                        command: command,
+                    }
                 });
+
+                return await Promise.all(robotsPending);
             }
             catch (error) {
                 console.error("[Error] 알 수 없는 오류!!!");

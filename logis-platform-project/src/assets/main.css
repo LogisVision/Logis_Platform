@@ -56,6 +56,18 @@ option {
     --black-button-active-hover: #0b467e;
     --black-secondary-button-active: #787878;
     --black-secondary-button-activ-hover: #4e4e4e;
+
+    /* state colors */
+    --state-none : #373737;
+    --state-empty : #606060;
+    --state-full : #973f09;
+    --state-income : #975e09;
+    --state-waiting : #03882c;
+    --state-progress : #099797;
+    --state-start : #097197;
+    --state-working : #0f5bb3;
+    --state-moving : #2d0fb3;
+    --state-done : #6c1cc1;
 }
 
 .total-layout {
@@ -155,6 +167,10 @@ option {
     border: 5px solid var(--white-font);
 }
 
+.loading-img {
+    scale: 1.5;
+}
+
 .loading-text {
     width: 100%;
     height: auto;
@@ -169,4 +185,8 @@ option {
     top: 80%;
     left: 50%;
 
+}
+
+.img-flipped {
+    transform: scaleX(-1);
 }
