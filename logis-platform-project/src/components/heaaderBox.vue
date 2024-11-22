@@ -1,39 +1,37 @@
 <script setup>
 import { ref } from 'vue';
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Auth_API } from "@/utilities/firebaseAuthAPI.js";
 
-// 새로운 변수 선언
+// 사용자 정보 받기
 const auth = getAuth();
-const user = auth.currentUser;
-console.log(user);
+const userData = ref(null);
+const userName = ref(null);
 
-// 사용자 정보 받아오기
-// const users = ref([]);
-//
-// const getUsers = async () => {
-//   const result = await Auth_API.getUserInfo();
-//   console.log(result);
-//   users.value = result;
-// };
+// 현재 세션 불러오기
+onAuthStateChanged(auth, (user) => {
+  if (auth) {
+    userData.value = user;
+    // console.log(userData.value);
+    getUserName();
+  }
+});
 
-// getUsers();
-
-// 이메일로 이름 얻어오기
-// const emailToName = (targetEmail) => {
-//   for (const user in users.value) {
-//     if (user.email === targetEmail) {
-//       return user.name;
-//     }
-//   }
-//   return "None";
-// };
+// 이름 얻어오기
+const getUserName = async () => {
+  if (userData.value) {
+    userName.value = await Auth_API.emailToName(userData.value.email);
+  }
+};
 </script>
 
 <template>
-  <div class="login-box">
+  <div v-if="!userData" class="login-box">
+    <div style="margin-right: 5px;">Welcome to Logis Vision!</div>
+  </div>
+  <div v-else class="login-box">
     <div style="margin-right: 5px;">Hi, </div>
-<!--    <div v-if="user" style="font-weight: 500;">{{ user.email }}!</div>-->
+    <div style="font-weight: 500;">{{ userName }}!</div>
   </div>
 </template>
 

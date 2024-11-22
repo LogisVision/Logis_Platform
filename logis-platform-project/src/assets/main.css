@@ -43,6 +43,8 @@ option {
     --black-target-finaly-background : #002429;
     --black-new-background : #035532;
     --black-new-finaly-background : #02351f;
+    --black-warn-background : #ac1c08;
+    --black-warn-finaly-background : #601005;
 
     /* font colors */
     --white-font : #FFFFFF;

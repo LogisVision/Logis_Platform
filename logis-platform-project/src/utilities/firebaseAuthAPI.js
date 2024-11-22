@@ -25,10 +25,34 @@ const API = {
     getUserInfo: async () => {
         try {
             // 모든 유저정보 불러오기
-            const querySanpshot = await getDocs(collection(database, "users"));
-            return querySanpshot.docs.map((doc) => {
+            const querySnapshot = await getDocs(collection(database, "users"));
+            return querySnapshot.docs.map((doc) => {
                 return { id: doc.id, ...doc.data() };
             });
+        }
+        catch (error) {
+            console.error("[Error] 알 수 없는 오류!!!");
+            return error.code;
+        }
+    },
+
+    // 이메일을 이름으로 바꾸는 기능 (email: string)
+    emailToName: async (email) => {
+        try {
+            // 모든 유저정보 불러오기
+            const querySnapshot = await getDocs(collection(database, "users"));
+            const users= querySnapshot.docs.map((doc) => {
+                return { id: doc.id, ...doc.data() };
+            });
+
+            // 일치하는 이메일 확인하기
+            for (const user of users) {
+                if (user.email === email) {
+                    return user.name;
+                }
+            }
+
+            return null;
         }
         catch (error) {
             console.error("[Error] 알 수 없는 오류!!!");

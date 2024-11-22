@@ -18,7 +18,7 @@ const storages = ref([]);
 
 const getStorages = async () => {
   const result = await LOGIS_API.storage.getAll();
-  console.log(result);
+  // console.log(result);
   storages.value = result;
   loadAll.value = true;
 }

@@ -1,9 +1,21 @@
 <script setup>
 import { ref } from 'vue';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
 import { Auth_API } from "@/utilities/firebaseAuthAPI.js";
+
+// 사용자 정보 받기
+const auth = getAuth();
+const userData = ref(null);
+
+// 현재 세션 불러오기
+onAuthStateChanged(auth, (user) => {
+  if (auth) {
+    userData.value = user;
+  }
+});
 
 // 새로운 변수 선언
 const selectedUser = ref("admin");
@@ -24,11 +36,11 @@ getUsers();
 
 // 로그인 관리
 const loginHandler = async (email, password) => {
-  console.log(email, password);
   const result = await Auth_API.login(email, password);
   console.log(result);
 };
 
+// 로그아웃 관리
 const logoutHandler = async () => {
   const result = await Auth_API.logout();
   console.log(result);
@@ -71,17 +83,18 @@ const logoutHandler = async () => {
                  @click="inputPassword += '0'">
               0
             </div>
-            <div class="login-btn col-3 flex-glow-0 flex-shrink-0 text-center pt-4 pb-4 m-2">
-              <span class="ps-2 pe-2 material-symbols-sharp password-icon"
-                    @click="() => { loginHandler(selectedEmail, inputPassword) }">
+
+            <div v-if="!userData" class="login-btn col-3 flex-glow-0 flex-shrink-0 text-center pt-4 pb-4 m-2"
+                 @click="() => { loginHandler(selectedEmail, inputPassword) }">
+              <span class="ps-2 pe-2 material-symbols-sharp password-icon">
                 login
               </span>
               <div style="opacity: 0;">.</div>
             </div>
-            <div class="login-btn col-3 flex-glow-0 flex-shrink-0 text-center pt-4 pb-4 m-2">
-              <span class="ps-2 pe-2 material-symbols-sharp password-icon"
-                    @click="logoutHandler">
-                login
+            <div v-else class="logout-btn col-3 flex-glow-0 flex-shrink-0 text-center pt-4 pb-4 m-2"
+                 @click="logoutHandler">
+              <span class="ps-2 pe-2 material-symbols-sharp password-icon">
+                logout
               </span>
               <div style="opacity: 0;">.</div>
             </div>
@@ -104,7 +117,7 @@ const logoutHandler = async () => {
 }
 
 .login-area {
-  height: 50vh;
+  height: fit-content;
 }
 
 .user-box {
@@ -183,6 +196,19 @@ const logoutHandler = async () => {
   position: relative;
 
   background-color: var(--black-new-background);
+  border-radius: 25px;
+
+  font-size: 1.3rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background-color 0.5s ease, font-weight 0.5s ease;
+}
+
+.logout-btn {
+  position: relative;
+
+  background-color: var(--black-warn-background);
   border-radius: 25px;
 
   font-size: 1.3rem;
