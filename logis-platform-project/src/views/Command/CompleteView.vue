@@ -28,6 +28,7 @@ const getCompletedCommands = async () => {
 }
 
 getCompletedCommands();
+setInterval(getCompletedCommands, 1000);
 
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {

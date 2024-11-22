@@ -28,6 +28,7 @@ const getPendingCommands = async () => {
 }
 
 getPendingCommands();
+setInterval(getPendingCommands, 1000);
 
 // 명령어를 강제로 완료시키는 Handler
 const forcedCompleteCommand = async (command) => {

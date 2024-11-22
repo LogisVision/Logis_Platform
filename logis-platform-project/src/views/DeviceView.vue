@@ -18,6 +18,8 @@ const getDevices = async () => {
   devices.value = response;
   loadAll.value = true;
 }
+
+getDevices();
 setInterval(getDevices, 1000);
 
 // 상태에 따라 이미지 변환하기

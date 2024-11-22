@@ -25,6 +25,7 @@ const getWorks = async () => {
 }
 
 getWorks();
+setInterval(getWorks, 1000);
 
 // 작업라인에 있는 아이템을 삭제하는 handler
 const deleteItem = async (item_data) => {

@@ -25,6 +25,7 @@ const getStorages = async () => {
 }
 
 getStorages();
+setInterval(getStorages, 1000);
 
 // 선택 화면 이동 Handler
 const moveToSelectView = (storage_id) => {

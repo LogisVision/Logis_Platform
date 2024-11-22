@@ -40,6 +40,7 @@ const getIncomes = async () => {
 
 changeTitle();
 getIncomes();
+setInterval(getIncomes, 1000);
 
 // 새로운 명령어 만드는 링크로 이동하는 handler
 const moveToNewCommand = (item_id, address) => {
