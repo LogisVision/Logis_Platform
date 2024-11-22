@@ -1,15 +1,10 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
 import { ref } from 'vue';
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
-
-// 라우터 초기화
-const route = useRoute();
-const router = useRouter();
 
 // 새로운 변수
 const loadAll = ref(false);
@@ -37,14 +32,12 @@ const forcedCompleteCommand = async (command) => {
 
   // 잠긴 명령어 갱신하기
   await COMMAND_API.command.check();
-  router.go(0);
 }
 
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {
   const result = await COMMAND_API.command.delete(command);
   console.log(result);
-  router.go(0);
 }
 </script>
 

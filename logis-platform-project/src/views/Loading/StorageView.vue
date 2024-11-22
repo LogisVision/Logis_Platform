@@ -1,5 +1,5 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
@@ -7,7 +7,6 @@ import { ref } from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
 // 라우터 초기화
-const route = useRoute();
 const router = useRouter();
 
 // 새로운 변수
@@ -43,7 +42,6 @@ const deleteItem = async (address, item) => {
   await LOGIS_API.storage.removeItem(address);
   await LOGIS_API.item.delete(item);
   await LOGIS_API.storage.updateState(address, 'empty');
-  router.go(0);
 }
 </script>
 

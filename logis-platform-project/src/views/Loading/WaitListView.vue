@@ -69,7 +69,6 @@ const moveToNewItem = (address) => {
 const deleteItem = async (item_data) => {
   const result = await LOGIS_API.item.delete(item_data);
   console.log(result);
-  router.go(0);
 }
 </script>
 
