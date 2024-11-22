@@ -63,15 +63,11 @@ const deleteCommand = async (command) => {
           <!-- Robot ID and State -->
           <div class="ms-2 command-state-box">
             <div class="d-flex justify-content-start align-items-center command-state-box">
-              <div v-if="command.robot === 'A'"
-                   class="d-flex justify-content-center align-items-center pt-4 pb-4 ps-4 pe-4 command-robot-id">
+              <div class="d-flex justify-content-center align-items-center pt-4 pb-4 ps-4 pe-4 command-robot-id"
+                   :style="{ backgroundColor: command.robot === 'A' ? 'var(--main-left-color)' : 'var(--main-right-color)'}">
                 {{ command.robot }}
               </div>
-              <div v-else-if="command.robot === 'B'"
-                   class="d-flex justify-content-center align-items-center pt-4 pb-4 ps-4 pe-4 command-robot-id"
-                   style="background-color: var(--main-right-color);">
-                {{ command.robot }}
-              </div>
+
               <div class="flex justify-content-center align-items-center command-state-text text-truncate ps-3 pe-3">
                 <div class="text-truncate command-state-id">
                   {{ command.id }}
@@ -88,22 +84,20 @@ const deleteCommand = async (command) => {
           </div>
 
           <!-- Item Information -->
-          <div class="ms-4 item-box">
-            <div class="d-flex flex-between align-content-center align-items-center">
-              <div class="pt-2 pb-2 ms-3 me-3 item-info-box">
-                <!-- Item ID -->
-                <div class="item-id text-truncate">
-                  {{ command.item.id }}
-                </div>
+          <div class="ms-4 ps-3 pe-3 item-box">
+            <div class="pt-2 pb-2  item-info-box">
+              <!-- Item ID -->
+              <div class="item-id text-truncate">
+                {{ command.item.id }}
+              </div>
 
-                <!-- Color Info -->
-                <div class="mt-2 text-center ps-4 pe-4 item-color-info text-truncate"
-                     :style="{
+              <!-- Color Info -->
+              <div class="mt-2 text-center ps-4 pe-4 item-color-info text-truncate"
+                   :style="{
                   backgroundColor: Color.colorDataToHex(command.item.color),
                    color: Color.getTextColor(command.item.color)
                 }">
-                  {{ Color.colorDataToHex(command.item.color) }}
-                </div>
+                {{ Color.colorDataToHex(command.item.color) }}
               </div>
             </div>
           </div>
@@ -216,6 +210,8 @@ const deleteCommand = async (command) => {
 }
 
 .item-id {
+  width: 100%;
+
   font-size: 1.0rem;
   font-weight: 600;
 }
