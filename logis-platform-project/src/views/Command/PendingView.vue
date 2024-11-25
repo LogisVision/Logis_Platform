@@ -49,7 +49,9 @@ const forcedCompleteCommand = async (command) => {
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {
   const result = await COMMAND_API.command.delete(command);
-  // console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
 }
 </script>
 
