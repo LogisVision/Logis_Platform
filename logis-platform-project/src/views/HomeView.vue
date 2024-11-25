@@ -15,8 +15,8 @@ const userStore = useUserStore();
 const userData = userStore.getUserData;
 
 // 새로운 변수 선언
-const selectedUser = ref("admin");
-const selectedEmail = ref("admin@itdice.net");
+const selectedUser = ref("User");
+const selectedEmail = ref("");
 const numbers = ref(['1', '2', '3', '4', '5', '6', '7', '8', '9']);
 const inputPassword = ref("");
 
@@ -36,6 +36,13 @@ getUsers();
 
 // 로그인 관리
 const loginHandler = async (email, password) => {
+  if (email.length === 0) {
+    return alert("사용자를 먼저 선택해주세요!");
+  }
+  else if (password.length === 0) {
+    return alert("비밀번호를 입력해주세요!");
+  }
+
   const result = await Auth_API.login(email, password);
   router.go(0);
   console.log(result);

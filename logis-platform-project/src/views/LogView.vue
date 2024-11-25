@@ -91,23 +91,23 @@ const deleteLogHandler = async (id) => {
                 class="count-box d-flex justify-content-between align-items-center">
               <div class="count-box d-flex flex-column align-items-center">
                 <div class="count-box title text-truncate">TOT</div>
-                <div class="count-box number text-truncate">10</div>
+                <div class="count-box number text-truncate">{{ log.log_counts.total }}</div>
               </div>
               <div class="count-box info d-flex flex-column align-items-center">
                 <div class="count-box info title text-truncate">INF</div>
-                <div class="count-box info number text-truncate">4</div>
+                <div class="count-box info number text-truncate">{{ log.log_counts.info }}</div>
               </div>
               <div class="count-box warning d-flex flex-column align-items-center">
                 <div class="count-box warning title text-truncate">WAN</div>
-                <div class="count-box warning number text-truncate">3</div>
+                <div class="count-box warning number text-truncate">{{ log.log_counts.warning }}</div>
               </div>
               <div class="count-box error d-flex flex-column align-items-center">
                 <div class="count-box error title text-truncate">ERR</div>
-                <div class="count-box error number text-truncate">2</div>
+                <div class="count-box error number text-truncate">{{ log.log_counts.error }}</div>
               </div>
               <div class="count-box critical d-flex flex-column align-items-center">
                 <div class="count-box critical title text-truncate">CRI</div>
-                <div class="count-box critical number text-truncate">1</div>
+                <div class="count-box critical number text-truncate">{{ log.log_counts.critical }}</div>
               </div>
             </div>
           </div>
