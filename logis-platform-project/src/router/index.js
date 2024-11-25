@@ -9,6 +9,11 @@ const router = createRouter({
       component: () => import('../views/ETC/NotFoundView.vue')
     },
     {
+      path: '/blocked',
+      name: 'blocked',
+      component: () => import('../views/ETC/BlockedView.vue')
+    },
+    {
       path: '/',
       name: 'home',
       component: () => import('../views/HomeView.vue')

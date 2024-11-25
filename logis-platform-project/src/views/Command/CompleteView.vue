@@ -1,11 +1,14 @@
 <script setup>
-import { onUnmounted } from 'vue';
+import { ref, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
+
+// 라우터 초기화
+const router = useRouter();
 
 // 새로운 변수
 const loadAll = ref(false);
@@ -15,6 +18,10 @@ const completedCommands = ref([]);
 
 const getCompletedCommands = async () => {
   let result = await COMMAND_API.command.getDone();
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
+
   if (result.length > 0) {
     result.sort((first, second) => second.datetime - first.datetime);
   }
@@ -32,7 +39,9 @@ onUnmounted(() => {
 // 명령어를 삭제하는 Handler
 const deleteCommand = async (command) => {
   const result = await COMMAND_API.command.delete(command);
-  // console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
 }
 </script>
 

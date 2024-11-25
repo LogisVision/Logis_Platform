@@ -1,9 +1,10 @@
 <script setup>
+import { ref, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import {onUnmounted, ref} from 'vue';
+
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
 // 라우터 초기화
@@ -32,8 +33,10 @@ const changeTitle = () => {
 const incomings = ref([]);
 
 const getIncomes = async () => {
-  const result = await LOGIS_API.incoming.getAll();
-  console.log(result);
+  const result = await LOGIS_API.incoming.getAll();if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
+
   incomings.value = result;
   loadAll.value = true;
 }
@@ -71,7 +74,9 @@ const moveToNewItem = (address) => {
 // 입고 라인에 있는 아이템을 삭제하는 handler
 const deleteItem = async (item_data) => {
   const result = await LOGIS_API.item.delete(item_data);
-  console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
 }
 </script>
 

@@ -1,10 +1,14 @@
 <script setup>
+import { ref, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import {onUnmounted, ref} from 'vue';
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
+
+// 라우터 초기화
+const router = useRouter();
 
 // 새로운 변수
 const loadAll = ref(false);
@@ -14,10 +18,13 @@ const pendingCommands = ref([]);
 
 const getPendingCommands = async () => {
   let result = await COMMAND_API.command.getRequested();
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
+
   if (result.length > 0) {
     result.sort((first, second) => first.datetime - second.datetime);
   }
-  // console.log(result);
   pendingCommands.value = result;
   loadAll.value = true;
 }
@@ -31,7 +38,9 @@ onUnmounted(() => {
 // 명령어를 강제로 완료시키는 Handler
 const forcedCompleteCommand = async (command) => {
   const result = await COMMAND_API.command.complete(command);
-  console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
 
   // 잠긴 명령어 갱신하기
   await COMMAND_API.command.check();

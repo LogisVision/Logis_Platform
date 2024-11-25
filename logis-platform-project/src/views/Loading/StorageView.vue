@@ -1,9 +1,9 @@
 <script setup>
+import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import {onUnmounted, ref} from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 
 // 라우터 초기화
@@ -18,7 +18,10 @@ const storages = ref([]);
 
 const getStorages = async () => {
   const result = await LOGIS_API.storage.getAll();
-  // console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
+
   storages.value = result;
   loadAll.value = true;
 }

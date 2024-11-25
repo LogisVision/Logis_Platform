@@ -1,9 +1,9 @@
 <script setup>
+import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
-import { ref } from 'vue';
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 
@@ -20,8 +20,12 @@ const item = ref(null);
 
 const getItem = async () => {
   const itemID = route.query.itemID;
+
   const result = await LOGIS_API.item.getOne(itemID);
-  console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
+
   item.value = result;
 };
 
@@ -40,7 +44,10 @@ const createCommand = async () => {
   const itemObject = await LOGIS_API.item.getOne(itemID);
   if (itemObject) {
     const result = await COMMAND_API.command.request(itemObject, destination);
-    console.log(result);
+    if (result === "permission-denied") {
+      await router.push({name: "blocked"});
+    }
+
     pendingCommand.value = false;
     await router.push({name: 'pending-command'});
   }
