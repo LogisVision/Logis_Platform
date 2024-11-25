@@ -1,37 +1,19 @@
 <script setup>
-import { ref } from 'vue';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { Auth_API } from "@/utilities/firebaseAuthAPI.js";
+import {useUserStore} from "@/stores/user.js";
 
 // 사용자 정보 받기
-const auth = getAuth();
-const userData = ref(null);
-const userName = ref(null);
+const userStore = useUserStore();
+const userData = userStore.getUserData;
 
-// 현재 세션 불러오기
-onAuthStateChanged(auth, (user) => {
-  if (auth) {
-    userData.value = user;
-    // console.log(userData.value);
-    getUserName();
-  }
-});
-
-// 이름 얻어오기
-const getUserName = async () => {
-  if (userData.value) {
-    userName.value = await Auth_API.emailToName(userData.value.email);
-  }
-};
 </script>
 
 <template>
-  <div v-if="!userData" class="login-box">
-    <div style="margin-right: 5px;">Welcome to Logis Vision!</div>
+  <div v-if="userData.name === ''" class="login-box">
+    <div class="hello-msg">Welcome to Logis Vision!</div>
   </div>
   <div v-else class="login-box">
-    <div style="margin-right: 5px;">Hi, </div>
-    <div style="font-weight: 500;">{{ userName }}!</div>
+    <div class="hello-msg">Hi, </div>
+    <div class="user-name-msg">{{ userData.name }}!</div>
   </div>
 </template>
 
@@ -42,5 +24,13 @@ const getUserName = async () => {
 
   font-weight: 300;
   margin-right: 30px;
+}
+
+.hello-msg {
+  margin-right: 5px;
+}
+
+.user-name-msg {
+  font-weight: 500;
 }
 </style>
