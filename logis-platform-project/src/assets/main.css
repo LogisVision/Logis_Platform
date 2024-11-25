@@ -71,6 +71,19 @@ option {
     --state-working : #0f5bb3;
     --state-moving : #2d0fb3;
     --state-done : #6c1cc1;
+
+    /* log colors */
+    --log-total : #202020;
+    --log-total-number : #171717;
+    --log-info : #0c8a9f;
+    --log-info-number : #095865;
+    --log-warning : #d5a108;
+    --log-warning-number : #9c7606;
+    --log-error : #c33021;
+    --log-error-number : #952215;
+    --log-critical : #320b8f;
+    --log-critical-number : #1d0653;
+
 }
 
 .total-layout {
@@ -192,4 +205,12 @@ option {
 
 .img-flipped {
     transform: scaleX(-1);
+}
+
+.powered {
+    width: 100px;
+}
+
+.openai-logo {
+    filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(218deg) brightness(106%) contrast(101%);
 }

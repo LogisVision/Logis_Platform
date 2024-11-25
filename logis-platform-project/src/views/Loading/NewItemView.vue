@@ -88,8 +88,14 @@ const createNewItem = async () => {
       <header-box />
     </header>
     <main class="main-layout">
-      <div class="text-start mt-4 ms-4 title-box">
-        Create a new item
+      <div class="d-flex flex-row justify-content-start align-items-end">
+        <div class="mt-4 ms-4 title-box">
+          Create a new item
+        </div>
+        <div class="d-flex flex-column justify-contents-center align-items-center powered ms-4 mb-1">
+          <div class="powered-text">Powered by</div>
+          <img src="@/assets/logos/OpenAI.svg" class="openai-logo" alt="OpenAI Logo" draggable="false">
+        </div>
       </div>
 
       <div class="container mt-3">
