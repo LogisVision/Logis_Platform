@@ -19,15 +19,25 @@ import {
 
 import {deleteObject, getDownloadURL, getStorage, ref, uploadBytes,} from "firebase/storage";
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import { firebaseConfig } from "@/security/firebaseKey.js";
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
-
 
 // Firebase 초기화
 const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);
 const storage = getStorage(fireApp);
+
+// 사용자 정보 얻어오기
+const auth = getAuth();
+const userData = ref(null);
+onAuthStateChanged(auth, (user) => {
+    if (auth) {
+        userData.value = user;
+    }
+});
 
 // Logis Vision의 Firebase Command 이외의 제어 부분
 const API = {
@@ -728,11 +738,20 @@ const API = {
                 // 수행해야할 명령어를 불러오기
                 const robotsPending = robots.map(async (robot) => {
                     const command = await COMMAND_API.command.getTargetOne(robot.id);
-                    return {
-                        id: robot.id,
-                        state: robot.state,
-                        location: robot.location,
-                        command: command,
+                    if (command === "permission-denied") {
+                        return {
+                            id: robot.id,
+                            state: robot.state,
+                            location: robot.location,
+                        }
+                    }
+                    else {
+                        return {
+                            id: robot.id,
+                            state: robot.state,
+                            location: robot.location,
+                            command: command,
+                        }
                     }
                 });
 
@@ -764,6 +783,60 @@ const API = {
             }
         }
     },
+
+    // Demon Server Log 관련 API
+    log: {
+        // 모든 Log를 불러오는 기능
+        getAll: async () => {
+            try {
+                // 모든 로그 불러오기
+                const querySnapshot = await getDocs(collection(database, "logs"));
+                const logs = querySnapshot.docs.map((doc) => {
+                    return { id: doc.id, ...doc.data() };
+                });
+
+                return logs.map((log) => {
+                    return {
+                        id: log.id,
+                        datetime_range: {
+                            start: log.datetime_range.start,
+                            end: log.datetime_range.end,
+                        },
+                        datetime_range_data: {
+                            start: log.datetime_range.start?.toDate(),
+                            end: log.datetime_range.end?.toDate(),
+                        },
+                        description: log.description,
+                        log_counts: {
+                            total: log.log_counts.total,
+                            info: log.log_counts.info,
+                            warning: log.log_counts.warning,
+                            error: log.log_counts.error,
+                            critical: log.log_counts.critical,
+                        },
+                    };
+                })
+            }
+            catch (error) {
+                console.error("[Error] 알 수 없는 오류!!!");
+                return error.code;
+            }
+        },
+
+        // 해당 로그를 삭제하는 기능 (id: string)
+        delete: async (id) => {
+            try {
+                await(deleteDoc(doc(database, "logs", id)));
+
+                console.log("[System] 로그를 성공적으로 삭제하였습니다.");
+                return 200;
+            }
+            catch (error) {
+                console.error("[Error] 로그를 삭제하는데 실패하였습니다.");
+                return error.code;
+            }
+        },
+    }
 }
 
 // Export

@@ -6,9 +6,14 @@ import headerBox from '@/components/heaaderBox.vue';
 
 import { LOGIS_API } from '@/utilities/firebaseAPI.js'
 import { Color } from "@/utilities/colorModule.js";
+import { useUserStore } from "@/stores/user.js";
 
 // 라우터 초기화
 const router = useRouter();
+
+// 사용자 정보 받기
+const userStore = useUserStore();
+const userData = userStore.getUserData;
 
 // 새로운 변수
 const loadAll = ref(false);
@@ -103,10 +108,10 @@ const stateColor = (state) => {
                 </div>
 
                 <!-- Command Type -->
-                <div class="col-12 text-center command-type pt-1 pb-1">Pending Command</div>
+                <div v-if="userData.name !== ''" class="col-12 text-center command-type pt-1 pb-1">Pending Command</div>
 
                 <!-- AGV Command -->
-                <div class="d-flex justify-content-center align-items-center overflow-auto no-scrollbar pt-2 pb-2 command-box mb-1">
+                <div v-if="userData.name !== ''" class="d-flex justify-content-center align-items-center overflow-auto no-scrollbar pt-2 pb-2 command-box mb-1">
                   <!-- Robot ID and State -->
                   <div class="ms-2 d-flex justify-content-start align-items-center command-state-box">
                     <div class="flex justify-content-center align-items-center command-state-text text-truncate ps-3 pe-3">

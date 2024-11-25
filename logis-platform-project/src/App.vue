@@ -29,7 +29,7 @@ const isLoggedIn = userStore.getIsLogin;
             Home
           </RouterLink>
         </li>
-        <li v-if="isLoggedIn" class="side-button-cover">
+        <li class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'device' }"
                       :class="{ 'side-button-active': route.name === 'device' }">
             Device
@@ -92,6 +92,12 @@ const isLoggedIn = userStore.getIsLogin;
           <RouterLink class="side-second-button text-truncate" :to="{ name: 'completed-command' }"
                       :class="{ 'side-second-button-active': route.name === 'completed-command' }">
             Completed
+          </RouterLink>
+        </li>
+        <li class="side-button-cover">
+          <RouterLink class="side-button" :to="{ name: 'logs' }"
+                      :class="{ 'side-button-active': route.name === 'logs' }">
+            Log
           </RouterLink>
         </li>
         <li v-if="isLoggedIn" class="side-button-cover">
