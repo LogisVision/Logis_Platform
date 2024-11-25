@@ -1,21 +1,18 @@
 <script setup>
 import { ref } from 'vue';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useRouter } from 'vue-router';
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
 
 import { Auth_API } from "@/utilities/firebaseAuthAPI.js";
+import { useUserStore } from "@/stores/user.js";
+
+// 라우터 초기화
+const router = useRouter();
 
 // 사용자 정보 받기
-const auth = getAuth();
-const userData = ref(null);
-
-// 현재 세션 불러오기
-onAuthStateChanged(auth, (user) => {
-  if (auth) {
-    userData.value = user;
-  }
-});
+const userStore = useUserStore();
+const userData = userStore.getUserData;
 
 // 새로운 변수 선언
 const selectedUser = ref("admin");
@@ -28,7 +25,10 @@ const users = ref([]);
 
 const getUsers = async () => {
   const result = await Auth_API.getUserInfo();
-  console.log(result);
+  if (result === "permission-denied") {
+    await router.push({name: "blocked"});
+  }
+
   users.value = result;
 };
 
@@ -37,12 +37,14 @@ getUsers();
 // 로그인 관리
 const loginHandler = async (email, password) => {
   const result = await Auth_API.login(email, password);
+  router.go(0);
   console.log(result);
 };
 
 // 로그아웃 관리
 const logoutHandler = async () => {
   const result = await Auth_API.logout();
+  router.go(0);
   console.log(result);
 }
 </script>
@@ -55,7 +57,10 @@ const logoutHandler = async () => {
     <main class="main-layout d-flex flex-column justify-content-center align-items-center">
       <div class="container mt-3">
         <div class="row">
-          <div class="col-lg-6 d-flex flex-column justify-content-center align-items-center user-select-area">
+          <div v-if="userData.name !== ''" class="col-lg-6 d-flex flex-column justify-content-center align-items-center">
+            <div class="hello-msg mb-4">Hello, {{ userData.name }}!</div>
+          </div>
+          <div v-else class="col-lg-6 d-flex flex-column justify-content-center align-items-center">
             <div class="hello-msg mb-4">Hello, {{ selectedUser }}!</div>
             <div class="user-box col-8 text-center pt-3 pb-3 mb-3"
                  v-for="user in users"
@@ -84,7 +89,7 @@ const logoutHandler = async () => {
               0
             </div>
 
-            <div v-if="!userData" class="login-btn col-3 flex-glow-0 flex-shrink-0 text-center pt-4 pb-4 m-2"
+            <div v-if="userData.name === ''" class="login-btn col-3 flex-glow-0 flex-shrink-0 text-center pt-4 pb-4 m-2"
                  @click="() => { loginHandler(selectedEmail, inputPassword) }">
               <span class="ps-2 pe-2 material-symbols-sharp password-icon">
                 login
@@ -112,8 +117,6 @@ const logoutHandler = async () => {
 .hello-msg {
   font-size: 2rem;
   font-weight: 700;
-}
-.user-select-area {
 }
 
 .login-area {

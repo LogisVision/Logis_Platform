@@ -29,7 +29,6 @@ const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);
 const storage = getStorage(fireApp);
 
-
 // Logis Vision의 Firebase Command 이외의 제어 부분
 const API = {
     // 아이템 관련 API

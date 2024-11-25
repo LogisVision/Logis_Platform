@@ -12,12 +12,17 @@ import {
     signOut, } from "firebase/auth";
 
 import { firebaseConfig } from "@/security/firebaseKey.js";
-
+import { useUserStore } from "@/stores/user.js";
 
 // Firebase 초기화
 const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);
 const auth = getAuth(fireApp);
+
+// pinia 초기화
+const userStore = useUserStore();
+const setLogin = userStore.login;
+const setLogout = userStore.logout;
 
 // Logis Vision의 Firebase Authentication 제어 부분
 const API = {
@@ -80,8 +85,9 @@ const API = {
 
             // 로그인 결과 확인
             if (result === true) {
+                const name = await API.emailToName(email);
+                setLogin(name, email);
                 console.log("[System] 로그인 성공");
-                alert("로그인 성공")
                 return 200;
             }
             else if (result === "auth/invalid-email") {
@@ -104,13 +110,12 @@ const API = {
             console.error("[Error] 알 수 없는 오류!!!");
             return error.code;
         }
-
-
     },
 
     // 로그아웃
     logout: async () => {
         try {
+            setLogout();
             await signOut(auth);
             return true;
         }

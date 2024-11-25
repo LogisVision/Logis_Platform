@@ -1,8 +1,16 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from "@/stores/user.js";
 
+// 라우터 초기화
 const route = useRoute();
+const router = useRouter();
+
+// pinia 초기화
+const userStore = useUserStore();
+const isLoggedIn = userStore.getIsLogin;
+
 </script>
 
 <template>
@@ -10,7 +18,8 @@ const route = useRoute();
     <div class="platform-side">
       <!-- Main Logo -->
       <div>
-        <img src="./assets/logos/Black_Theme@3x.png" class="main-logo" alt="Logis Vision Logo"  draggable="false"/>
+        <img src="./assets/logos/Black_Theme@3x.png" class="main-logo" alt="Logis Vision Logo"  draggable="false"
+             @click="router.push({ name: 'home' })"/>
       </div>
       <!-- Side Buttons -->
       <ul class="side-button-list">
@@ -20,13 +29,13 @@ const route = useRoute();
             Home
           </RouterLink>
         </li>
-        <li class="side-button-cover">
+        <li v-if="isLoggedIn" class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'device' }"
                       :class="{ 'side-button-active': route.name === 'device' }">
             Device
           </RouterLink>
         </li>
-        <li class="side-button-cover">
+        <li v-if="isLoggedIn" class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'storage' }"
                       :class="{ 'side-button-active': (route.name === 'storage' || route.name === 'waitlist'
                       || route.name === 'new-item' || route.name === 'workspace')  }">
@@ -61,7 +70,7 @@ const route = useRoute();
             New Item
           </RouterLink>
         </li>
-        <li class="side-button-cover">
+        <li v-if="isLoggedIn" class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'pending-command' }"
                       :class="{ 'side-button-active': (route.name === 'new-command' || route.name === 'pending-command' || route.name === 'completed-command')  }">
             Command
@@ -85,7 +94,7 @@ const route = useRoute();
             Completed
           </RouterLink>
         </li>
-        <li class="side-button-cover">
+        <li v-if="isLoggedIn" class="side-button-cover">
           <RouterLink class="side-button" :to="{ name: 'settings' }"
                       :class="{ 'side-button-active': route.name === 'settings' }">
             Settings
@@ -137,6 +146,8 @@ const route = useRoute();
 
   object-fit: contain;
   align-self: flex-start;
+
+  cursor: pointer;
 }
 
 .side-button-list {
