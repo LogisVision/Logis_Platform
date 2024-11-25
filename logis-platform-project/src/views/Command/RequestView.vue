@@ -6,10 +6,15 @@ import headerBox from '@/components/heaaderBox.vue';
 
 import { LOGIS_API } from '@/utilities/firebaseAPI.js';
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
+import { useUserStore } from "@/stores/user.js";
 
 // 라우터 초기화
 const route = useRoute();
 const router = useRouter();
+
+// 사용자 정보 받기
+const userStore = useUserStore();
+const userData = userStore.getUserData;
 
 // 새로운 변수
 const imageLoad = ref(false);
@@ -19,6 +24,10 @@ const pendingCommand = ref(false);
 const item = ref(null);
 
 const getItem = async () => {
+  if (route.query.itemID === undefined) {
+    await router.push({name: "blocked"});
+  }
+
   const itemID = route.query.itemID;
 
   const result = await LOGIS_API.item.getOne(itemID);
@@ -57,6 +66,15 @@ const createCommand = async () => {
     console.error("[Error] 해당 아이템에 대한 자세한 정보가 없습니다.");
   }
 }
+
+// 권한이 있는지 확인
+const check = async () => {
+  if (userData.name === '') {
+    await router.push({name: "blocked"});
+  }
+}
+
+check();
 </script>
 
 <template>

@@ -6,10 +6,15 @@ import headerBox from '@/components/heaaderBox.vue';
 
 import { LOGIS_API } from "@/utilities/firebaseAPI.js";
 import { Color } from "@/utilities/colorModule.js";
+import { useUserStore } from "@/stores/user.js";
 
 // 라우터 초기화
 const route = useRoute();
 const router = useRouter();
+
+// 사용자 정보 받기
+const userStore = useUserStore();
+const userData = userStore.getUserData;
 
 // 새로운 변수
 const newColorHex = ref('#000000');
@@ -80,6 +85,15 @@ const createNewItem = async () => {
 
   await router.push({name: 'waitlist',});
 }
+
+// 권한이 있는지 확인
+const check = async () => {
+  if (userData.name === '') {
+    await router.push({name: "blocked"});
+  }
+}
+
+check();
 </script>
 
 <template>

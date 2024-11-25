@@ -1,6 +1,25 @@
 <script setup>
+import { useRouter } from 'vue-router';
+
 import copyrightBox from '@/components/copyrightsBox.vue';
 import headerBox from '@/components/heaaderBox.vue';
+import { useUserStore } from "@/stores/user.js";
+
+// 라우터 초기화
+const router = useRouter();
+
+// 사용자 정보 받기
+const userStore = useUserStore();
+const userData = userStore.getUserData;
+
+// 권한이 있는지 확인
+const check = async () => {
+  if (userData.name === '') {
+    await router.push({name: "blocked"});
+  }
+}
+
+check();
 </script>
 
 <template>

@@ -6,9 +6,14 @@ import headerBox from '@/components/heaaderBox.vue';
 
 import { COMMAND_API } from "@/utilities/firebaseCommandAPI.js";
 import { Color } from "@/utilities/colorModule.js";
+import { useUserStore } from "@/stores/user.js";
 
 // 라우터 초기화
 const router = useRouter();
+
+// 사용자 정보 받기
+const userStore = useUserStore();
+const userData = userStore.getUserData;
 
 // 새로운 변수
 const loadAll = ref(false);
@@ -17,6 +22,10 @@ const loadAll = ref(false);
 const pendingCommands = ref([]);
 
 const getPendingCommands = async () => {
+  if (userData.name === '') {
+    await router.push({name: "blocked"});
+  }
+
   let result = await COMMAND_API.command.getRequested();
   if (result === "permission-denied") {
     await router.push({name: "blocked"});
