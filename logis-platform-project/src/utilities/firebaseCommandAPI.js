@@ -11,7 +11,6 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, serv
 import { firebaseConfig } from "@/security/firebaseKey.js";
 import { LOGIS_API } from "@/utilities/firebaseAPI.js";
 
-
 // Firebase 초기화
 const fireApp = initializeApp(firebaseConfig);
 const database = getFirestore(fireApp);

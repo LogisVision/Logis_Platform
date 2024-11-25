@@ -150,6 +150,10 @@ const deleteCommand = async (command) => {
           </span>
           <div class="nothing-message">There is nothing here!</div>
         </div>
+
+        <div v-if="!loadAll" class="loading-box">
+          <img src="@/assets/images/loadingImage.gif" alt="Loading" draggable="false">
+        </div>
       </div>
 
     </main>
