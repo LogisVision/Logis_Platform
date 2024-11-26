@@ -108,7 +108,7 @@ const API = {
 
                 // 해당 로봇에게 주어진 명령어만 추출하기
                 let targetCommands = requestedCommands.filter(command => command.robot === id);
-                targetCommands = targetCommands.filter(command => command.state === "request");
+                targetCommands = targetCommands.filter(command => (command.state === "request" || command.state === "progress"));
 
                 if (targetCommands.length > 0) {
                     targetCommands.sort((first, second) => second.datetime - first.datetime);
